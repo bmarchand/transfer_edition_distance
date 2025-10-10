@@ -26,3 +26,5 @@ target
 /target
 
 level_k_lgt_generator/random_lgt_networks/*.gr
+
+*.pyc
