@@ -139,6 +139,20 @@ def random_pair(net,wint,wext):
 
 def export_network(network, filename):
     f = open(filename,'w')
+
+    leaf_list = leaves(network)
+    nnodes = network.order()
+
+    mapping = {}
+    for k,u in enumerate(leaf_list):
+        mapping[u] = k
+    for k,u in enumerate(network.nodes):
+        if u not in leaf_list:
+            mapping[u] = nnodes+k
+
+
+    network = nx.relabel_nodes(network, mapping)
+
     print("nvertices nedges",network.order(),network.size(),file=f)
     for u,v,edge_type in network.edges(data='edge_type'):
         print(u,v,edge_type,file=f)

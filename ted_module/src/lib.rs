@@ -299,8 +299,6 @@ impl Graph {
     }
 
     fn is_tree_edge(&self, u : usize, v : usize) -> bool {
-        println!("{:?}", self.edge_label);
-        println!("{:?} {:?}", u,v);
         *self.edge_label.get(&(u,v)).unwrap()==EdgeType::TREE 
     }
 }
@@ -356,8 +354,6 @@ fn parse_graph(list_edges : Vec<String>) -> Graph {
         .map(|(node,_)| *node)
         .collect();
 
-    println!("{:?}", graph);
-    println!("{:?}", roots);
     assert!(roots.len()==1);
     let root = roots[0];
 
