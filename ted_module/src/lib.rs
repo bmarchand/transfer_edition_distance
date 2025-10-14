@@ -2,19 +2,23 @@ use pyo3::prelude::*;
 
 use std::collections::HashMap;
 
-#[derive(Default)]
-struct NetworkNode {
-    label : usize,
-    clade : Vec<usize>,
-    tree_children: Vec<NetworkNode>,
-    transfer_out_ngbh : Vec<NetworkNode>,
-    canonical_label : String
-}
-
 struct CanonicalLabel {
-    clade : &Vec<usize>,
+    clade : Vec<usize>,
     rank : usize
 }
+
+impl CanonicalLabel {
+    fn to_string(&self) -> String {
+        let mut return_string : String = "".to_owned();
+        for label in &self.clade {
+            return_string.push_str((*label).to_string().as_str());
+        }
+        return_string.push('-');
+        return_string.push_str(self.rank.to_string().as_str());
+        return return_string;
+    }
+}
+
 
 #[derive(PartialEq,Debug,Clone)]
 enum EdgeType {
@@ -30,6 +34,8 @@ struct Graph {
     clade : HashMap<usize, Vec<usize>> 
 }
 
+/// The same_clade function assumes the clades are sorted
+/// They are sorted during the construction of the Graph-s.
 fn same_clade(clade1 : &Vec<usize>, clade2 : &Vec<usize>) -> bool {
     if clade1.len() != clade2.len() {
         return false;
@@ -44,10 +50,10 @@ fn same_clade(clade1 : &Vec<usize>, clade2 : &Vec<usize>) -> bool {
 
 impl Graph {
 
-    fn canonical_form(&self) -> HashMap<CanonicalLabel, Vec<CanonicalLabel>> {
+    fn canonical_form(&self) -> HashMap<String, Vec<String>> {
         
     // finding root
-    let roots : Vec<usize> = graph.in_ngbh
+    let roots : Vec<usize> = self.in_ngbh
         .iter()
         .filter(|(_,&ref in_ngbhood)| (*in_ngbhood).len()==0)
         .map(|(node,_)| *node)
@@ -56,41 +62,42 @@ impl Graph {
     assert!(roots.len()==1);
     let root = roots[0];
 
-    let mut canonical_form : HashMap<CanonicalLabel,Vec<CanonicalLabel>> = HashMap::new();
 
     let mut cano_label_map : HashMap<usize, CanonicalLabel> = HashMap::new();
 
-    cano_label_map.insert(root, CanonicalLabel { clade : self.clade.get(&root).unwrap(), rank : 0 })
+    cano_label_map.insert(root, CanonicalLabel { clade : self.clade.get(&root).unwrap().to_vec(), rank : 0 });
 
     let mut queue : Vec<usize> = vec![root];
 
     while queue.len() > 0 {
-        let node : usize = queue.pop();
+        let node : usize = queue.pop().unwrap();
 
         for child in self.out_ngbh.get(&node).unwrap() {
-            if is_tree_edge(node, child) {
-                let canonical_label : CanonicalLabel = cano_label_map.get(&node).unwrap();
+            if self.is_tree_edge(node, *child) {
+                let canonical_label : &CanonicalLabel = cano_label_map.get(&node).unwrap();
 
                 if same_clade(self.clade.get(&node).unwrap(), self.clade.get(&child).unwrap()) {
-                    cano_label_map.insert(child, CanonicalLabel {clade : canonical_label.clade , rank : canonical_label.rank+1});
+                    cano_label_map.insert(*child, CanonicalLabel {clade : canonical_label.clade.clone() , rank : canonical_label.rank+1});
                 }
                 else {
-                    cano_label_map.insert(child, CanonicalLabel {clade : self.clade.get(&root).unwrap() , rank : 0});
+                    cano_label_map.insert(*child, CanonicalLabel {clade : self.clade.get(&child).unwrap().to_vec() , rank : 0});
                 }
-                queue.push(child);
+                queue.push(*child);
             }
         }
     }
     
+    let mut canonical_form : HashMap<String,Vec<String>> = HashMap::new();
+    
     for (node, neighborhood) in self.out_ngbh.iter() {
         for node2 in neighborhood {
-            if !self.is_tree_edge(node, node2) {
+            if !self.is_tree_edge(*node, *node2) {
                 
-                cano_label1 = cano_label_map.get(&node).unwrap();
-                cano_label2 = cano_label_map.get(&node2).unwrap();
+                let cano_label1 = cano_label_map.get(&node).unwrap().to_string();
+                let cano_label2 = cano_label_map.get(&node2).unwrap().to_string();
 
                 if let Some(v) = canonical_form.get_mut(&cano_label1) {
-                    *v.push(cano_label2);
+                    (*v).push(cano_label2);
                 }
                 else {
                     canonical_form.insert(cano_label1, vec![cano_label2]);
@@ -99,18 +106,40 @@ impl Graph {
         }
     }
 
+    for (_, val) in canonical_form.iter_mut() {
+        (*val).sort();
+    }
+
     return canonical_form;
+
     }
 
     fn is_iso(&self, other_graph : Graph) -> bool {
-        let cano1 : Vec<(usize,usize)> = self.canonical_form();
-        let cano2 : Vec<(usize,usize)> = other_graph.canonical_form();
+        let cano1 : HashMap<String, Vec<String>> = self.canonical_form();
+        let cano2 : HashMap<String, Vec<String>> = other_graph.canonical_form();
 
-        // TODO test they are the same. beware of order of things ! same applies for "same_clade"
-        // function btw.
+        for (cano_label1, neighborhood1) in cano1.iter() {
+
+            if let Some(neighborhood2) = cano2.get(cano_label1) {
+               // now test that neighborhood1 and neighborhood2 are equal.
+               if neighborhood1.len()!=neighborhood2.len() {
+                   return false;
+               }
+
+               for k in 0..neighborhood1.len() {
+                   if neighborhood1[k] != neighborhood2[k] {
+                       return false;
+                   }
+               }
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
     }
 
-    fn remove_transfer_set(&self, transfers_to_remove : Vec<&(usize,usize)>) -> Graph {
+    fn remove_transfer_set(&self, transfers_to_remove : &Vec<&(usize,usize)>) -> Graph {
         let mut new_graph : Graph = Graph {
             in_ngbh : self.in_ngbh.clone(),
             out_ngbh : self.out_ngbh.clone(),
@@ -209,6 +238,13 @@ impl Graph {
             tree_child_in_ngbh.push(tree_parent);
         }
 
+        // the edge_label of new edge is set, the old edge is removed
+        self.edge_label.remove(&(tree_parent, node));
+        for tree_child in &tree_children {
+            self.edge_label.remove(&(node,*tree_child));
+            self.edge_label.insert((tree_parent,*tree_child), EdgeType::TREE); 
+        }
+
         // the tree parent becomes parent of tree children
         let tree_parent_out_ngbh : &mut Vec<usize> = self.out_ngbh.get_mut(&tree_parent).unwrap();
         for tree_child in &tree_children {
@@ -263,6 +299,8 @@ impl Graph {
     }
 
     fn is_tree_edge(&self, u : usize, v : usize) -> bool {
+        println!("{:?}", self.edge_label);
+        println!("{:?} {:?}", u,v);
         *self.edge_label.get(&(u,v)).unwrap()==EdgeType::TREE 
     }
 }
@@ -343,6 +381,7 @@ fn parse_graph(list_edges : Vec<String>) -> Graph {
             }
         }
 
+        new_clade.sort();
         graph.clade.insert(node, new_clade.clone());
         return new_clade;
     }
@@ -352,170 +391,6 @@ fn parse_graph(list_edges : Vec<String>) -> Graph {
     return graph;
 
 }
-
-//fn make_network(list_edges : Vec<String>) -> NetworkNode {
-//
-//    // make graph from list of edges
-//    graph = parse_graph(list_edges);
-//
-//    // find root 
-//    let roots : Vec<usize> = graph.in_ngbh
-//        .iter()
-//        .filter(|(_,&ref in_ngbhood)| (*in_ngbhood).len()==0)
-//        .map(|(node,_)| *node)
-//        .collect();
-//
-//    assert!(roots.len()==1);
-//    let root = roots[0];
-//
-//    // recursive function whose main purpose is to label
-//    // by clades
-//    fn network_node_creation(node_label : usize, 
-//        out_neighborhood : &HashMap<usize, Vec<usize>>,
-//        edge_label : &HashMap<(usize,usize), EdgeType>) -> NetworkNode {
-//
-//        let out_neighbors = out_neighborhood.get(&node_label).unwrap();
-//
-//        if out_neighbors.len() == 0 {
-//            return NetworkNode { 
-//                label : node_label,
-//                clade : vec![node_la bel],
-//                tree_children : Vec::new(),
-//                ..Default::default()
-//            };
-//        }
-//        
-//        let mut new_clade : Vec<usize> = Vec::new();
-//        let mut children_vec : Vec<NetworkNode> = Vec::new();
-//        for child in out_neighbors {
-//            if edge_label.get(&(node_label,*child)).unwrap()==EdgeType::TREE {
-//                let node_child : NetworkNode = network_node_creation(*child, 
-//                                                                out_neighborhood,
-//                                                                edge_label);
-//                for v in &node_child.clade {
-//                    new_clade.push(*v);
-//                }
-//                insert_ordered_by_clade(children_vec, node_child);
-//            }
-//        }
-//        
-//        return NetworkNode {
-//            label : node_label,
-//            clade : new_clade,
-//            tree_children : children_vec,
-//            ..Default::default()
-//        };
-//    }
-//
-//    // original call to get clades
-//    let tree_node_root : NetworkNode = network_node_creation(root, &graph.out_ngbh, &graph.edge_label);
-//
-//    // no choice but to store a correspondance from label to node
-//    let mut label_to_network_node : HashMap<usize, NetworkNode> = HashMap::new();
-//
-//    let mut queue : Vec<NetworkNode> = vec![tree_node_root];
-//    tree_node_root.canonical_label = CanonicalLabel { clade : tree_root_node.clade , rank : 0}; 
-//    label_to_network_node.insert(tree_node_root.label, tree_node_root);
-//
-//    while queue.len() > 0 {
-//        let node : NetworkNode = queue.pop();
-//        label_to_network_node.insert(node.label, node);
-//
-//        for tree_child in node.tree_children {
-//            if equal_clades(node.clade, tree_child.clade) {
-//                tree_child.canonical_label = CanonicalLabel { clade : tree_child.clade, rank : node.canonical_label.rank + 1 };
-//            }
-//            else {
-//                tree_child.canonical_label = CanonicalLabel { clade : tree_child.clade, rank : 0 };
-//            }
-//            queue.push(tree_child);
-//        }
-//    }
-//
-//    let mut queue : Vec<NetworkNode> = vec![tree_node_root];
-//
-//    while queue.len() > 0 {
-//        let node : NetworkNode = queue.pop();
-//
-//        for v in graph.out_ngbh.get(node.label) {
-//            if &graph.edge_type.get((node.label,v)).unwrap()==EdgeType::TRANSFER {
-//                node.transfer_out_ngbh.push(label_to_network_node(v));
-//            }
-//        }
-//
-//        for tree_child in node.tree_children {
-//            queue.push(tree_child);
-//        }
-//    }
-//
-//    return tree_node_root; 
-//}
-//
-//fn equal_clades(clade1 : &Vec<usize>, clade2 : &Vec<usize>) -> bool {
-//    if clade1.len()!=clade2.len() {
-//        return false;
-//    }
-//    for k in 0..=clade.len() {
-//        if clade1[k]!=clade2[k] {
-//            return false;
-//        }
-//    }
-//    return true;
-//}
-//
-//fn insert_ordered_by_clade(node_vec, node) -> Vec<NetworkNode> {
-//    for k in 0..node_vec.len() {
-//        if is_smaller_clade(node.clade, node_vec[k].clade) {
-//            node_vec.insert(k,node);
-//        }
-//    }
-//    return node_vec
-//}
-//
-//"""
-//Returns true if clade1 is smaller than or equal to clade2
-//"""
-//fn is_smaller_clade(clade1: &Vec<usize>, clade2 : &Vec<usize>) -> bool {
-//    let mut k = 0;
-//    loop {
-//        if k >= clade1.len() {
-//            return true;
-//        }
-//        if k >= clade2.len() {
-//            return false;
-//        }
-//        if clade1[k] < clade2[k] {
-//            return true;
-//        }
-//        if clade2[k] < clade1[k] {
-//            return false;
-//        }
-//        k += 1;
-//    }
-//    return true;
-//}
-//
-//fn get_clades(node: NetworkNode) -> Vec<Vec<usize>> {
-//    let mut return_vec : Vec<Vec<usize>> = vec![node.clade];
-//
-//    for child in node.tree_children {
-//        let clades = get_clades(child);
-//        for clade in clades {
-//            return_vec = insert_ordered_by_clade(return_vec, 
-//        } 
-//    }
-//}
-//
-//fn ensure_same_base_tree(n1 : NetworkNode, n2 : NetworkNode) -> (NetworkNode, NetworkNode, usize) {
-//    let mut num_ops = 0;
-//
-//    let vec_clades : Vec<Vec<usize>> = Vec::new();
-//
-//    
-//
-//}
-//
-//
 
 fn powerset(v : &[(usize,usize)]) -> Vec<Vec<&(usize,usize)>> {
     (0..2usize.pow(v.len() as u32)).map(|i| {
@@ -528,9 +403,9 @@ fn powerset(v : &[(usize,usize)]) -> Vec<Vec<&(usize,usize)>> {
 }
 
 #[pyfunction]
-fn transfer_edition_distance(N1 : Vec<String>, N2 : Vec<String>) -> PyResult<usize> {
-    let mut graph1 : Graph = parse_graph(N1);
-    let mut graph2 : Graph = parse_graph(N2);
+fn transfer_edition_distance(network1 : Vec<String>, network2 : Vec<String>) -> PyResult<usize> {
+    let mut graph1 : Graph = parse_graph(network1);
+    let mut graph2 : Graph = parse_graph(network2);
 
     let mut distance : usize = 0;
 
@@ -561,8 +436,8 @@ fn transfer_edition_distance(N1 : Vec<String>, N2 : Vec<String>) -> PyResult<usi
     let mut found_it : bool = false;
     for v1 in powerset(&transfers1) {
         for v2 in powerset(&transfers2) {
-            let graph1p : Graph = graph1.remove_transfer_set(v1);
-            let graph2p : Graph = graph2.remove_transfer_set(v2);
+            let graph1p : Graph = graph1.remove_transfer_set(&v1);
+            let graph2p : Graph = graph2.remove_transfer_set(&v2);
             if graph1p.is_iso(graph2p) {
                 distance += v1.len();
                 distance += v2.len();
@@ -577,7 +452,30 @@ fn transfer_edition_distance(N1 : Vec<String>, N2 : Vec<String>) -> PyResult<usi
     assert!(found_it);
 
     return Ok(distance);
-//    return Ok(ted_distance(n1,n2))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_to_string() {
+        let cano_label : CanonicalLabel = CanonicalLabel {clade : vec![1,2,3], rank : 8};
+        assert_eq!(cano_label.to_string(),"123-8".to_string());
+    }
+
+    #[test]
+    fn test_same_clade() {
+        let v1 : Vec<usize> = vec![1,2,3];
+        let v2 : Vec<usize> = vec![1,3];
+        let v3 : Vec<usize> = vec![1,3,4];
+        assert!(same_clade(&v1,&v1));
+        assert!(same_clade(&v2,&v2));
+        assert!(same_clade(&v3,&v3));
+        assert!(!same_clade(&v1,&v2));
+        assert!(!same_clade(&v1,&v3));
+        assert!(!same_clade(&v2,&v3));
+    }
 }
 
 /// A Python module implemented in Rust.
@@ -586,3 +484,4 @@ fn ted_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(transfer_edition_distance,m)?)?;
     Ok(())
 }
+
