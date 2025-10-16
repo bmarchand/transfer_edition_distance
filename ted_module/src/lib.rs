@@ -26,6 +26,7 @@ enum EdgeType {
     TREE,
 }
 
+
 #[derive(Default,Debug)]
 struct Graph {
     out_ngbh : HashMap<usize, Vec<usize>>,
@@ -117,10 +118,30 @@ impl Graph {
     fn is_iso(&self, other_graph : Graph) -> bool {
         let cano1 : HashMap<String, Vec<String>> = self.canonical_form();
         let cano2 : HashMap<String, Vec<String>> = other_graph.canonical_form();
+        //println!("cano1 iso test {:?}", cano1);
+        //println!("cano2 iso test {:?}", cano2);
 
         for (cano_label1, neighborhood1) in cano1.iter() {
+            //println!("{:?}", cano2.get(cano_label1));
+            match cano2.get(cano_label1) {
+                Some(neighborhood2) => {
+                    // now test that neighborhood1 and neighborhood2 are equal.
+                    if neighborhood1.len()!=neighborhood2.len() {
+                        return false;
+                    }
 
-            if let Some(neighborhood2) = cano2.get(cano_label1) {
+                    for k in 0..neighborhood1.len() {
+                        if neighborhood1[k] != neighborhood2[k] {
+                            return false;
+                        }
+                    }
+                },
+                None => { return false; }
+            }
+        }
+
+        for (cano_label2, neighborhood2) in cano2.iter() {
+            if let Some(neighborhood1) = cano1.get(cano_label2) {
                // now test that neighborhood1 and neighborhood2 are equal.
                if neighborhood1.len()!=neighborhood2.len() {
                    return false;
@@ -136,6 +157,7 @@ impl Graph {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -388,18 +410,38 @@ fn parse_graph(list_edges : Vec<String>) -> Graph {
 
 }
 
-fn powerset(v : &[(usize,usize)]) -> Vec<Vec<&(usize,usize)>> {
-    (0..2usize.pow(v.len() as u32)).map(|i| {
-        v.iter()
-            .enumerate()
-            .filter(|&(t,_)| (i >> t) % 2 == 1)
-            .map(|(_, element)| element)
-            .collect()
-    }).collect()
+fn all_integers_with_weight_k(n : u64, k : u64) -> Vec<u64> {
+    let mut result : Vec<u64> = Vec::new();
+    if k==0 {
+        result.push(0);
+        return result;
+    }
+
+    let mut set : u64 = (1 << k) - 1;
+    let limit : u64 = 1 << n;
+
+    while set < limit 
+    {
+        result.push(set);
+        let c : u64 = set & set.wrapping_neg();
+        let r : u64 = set + c;
+        //println!("c {:?}",c);
+        set = ((( r ^ set ) >> 2) / c ) |  r;
+    }
+    return result;
 }
 
-#[pyfunction]
-fn transfer_edition_distance(network1 : Vec<String>, network2 : Vec<String>) -> PyResult<usize> {
+//fn powerset(v : &[(usize,usize)]) -> Vec<Vec<&(usize,usize)>> {
+//    (0..2usize.pow(v.len() as u32)).map(|i| {
+//        v.iter()
+//            .enumerate()
+//            .filter(|&(t,_)| (i >> t) % 2 == 1)
+//            .map(|(_, element)| element)
+//            .collect()
+//    }).collect()
+//}
+
+pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<String>) -> usize {
     let mut graph1 : Graph = parse_graph(network1);
     let mut graph2 : Graph = parse_graph(network2);
 
@@ -425,28 +467,108 @@ fn transfer_edition_distance(network1 : Vec<String>, network2 : Vec<String>) -> 
     graph1.remove_degree_2_nodes();
     graph2.remove_degree_2_nodes();
     // end of block ensuring same base tree
+   
+    //println!("distance after clade removal, before preprocess {:?}", distance);
+    //println!("cano1 {:?}", graph1.canonical_form());
+    //println!("cano2 {:?}", graph2.canonical_form());
+
+    // preprocessing rule: if there exists a clade_a -> clade_b
+    // transfer in graph1 but not in graph2, remove it.
+    for (u,v) in graph1.list_transfers() {
+        let clade_a1 = graph1.clade.get(&u).unwrap();
+        let clade_b1 = graph1.clade.get(&v).unwrap();
+
+        let mut found_it : bool = false;
+
+        for (w,x) in graph2.list_transfers() {
+            let clade_a2 = graph2.clade.get(&w).unwrap();
+            let clade_b2 = graph2.clade.get(&x).unwrap();
+            
+            if same_clade(&clade_a1, &clade_a2) && same_clade(&clade_b1, &clade_b2) {
+                found_it = true;
+                break
+            }
+        }
+        if !found_it {
+            graph1.remove_transfer(u,v);
+            distance += 1;
+        }
+        
+    }
+    
+    for (u,v) in graph2.list_transfers() {
+        let clade_a2 = graph2.clade.get(&u).unwrap();
+        let clade_b2 = graph2.clade.get(&v).unwrap();
+
+        let mut found_it : bool = false;
+
+        for (w,x) in graph1.list_transfers() {
+            let clade_a1 = graph1.clade.get(&w).unwrap();
+            let clade_b1 = graph1.clade.get(&x).unwrap();
+            
+            if same_clade(&clade_a1, &clade_a2) && same_clade(&clade_b1, &clade_b2) {
+                found_it = true;
+                break
+            }
+        }
+        if !found_it {
+            graph2.remove_transfer(u,v);
+            distance += 1;
+        }
+    }
+
+    graph1.remove_degree_2_nodes();
+    graph2.remove_degree_2_nodes();
+    // end preprocessing
+
+    //println!("distance before actual comp {:?}", distance);
 
     let transfers1 : Vec<(usize,usize)> = graph1.list_transfers(); 
     let transfers2 : Vec<(usize,usize)> = graph2.list_transfers(); 
-
+    
+    //println!("{:?} {:?}", transfers1,transfers2);
+    
     let mut found_it : bool = false;
-    for v1 in powerset(&transfers1) {
-        for v2 in powerset(&transfers2) {
-            let graph1p : Graph = graph1.remove_transfer_set(&v1);
-            let graph2p : Graph = graph2.remove_transfer_set(&v2);
+
+    for size_deletion_set in 0..=(transfers1.len()+transfers2.len()) {
+        //println!("size deletion set {:?}", size_deletion_set);
+        for x in all_integers_with_weight_k((transfers1.len()+transfers2.len()).try_into().unwrap(), size_deletion_set.try_into().unwrap()) {
+            //println!("{:?}",x);
+            let deleted_transfers1 : Vec<&(usize,usize)> = transfers1.iter()
+                .enumerate()
+                .filter(|&(t,_)| (x >> t) % 2 == 1)
+                .map(|(_, element)| element)
+                .collect(); 
+            
+            let deleted_transfers2 : Vec<&(usize,usize)> = transfers2.iter()
+                .enumerate()
+                .filter(|&(t,_)| (x >> (transfers1.len()+t)) % 2 == 1)
+                .map(|(_, element)| element)
+                .collect(); 
+
+            //println!("deleted_transfers1 {:?}", deleted_transfers1);
+            //println!("deleted_transfers2 {:?}", deleted_transfers2);
+            let graph1p : Graph = graph1.remove_transfer_set(&deleted_transfers1);
+            let graph2p : Graph = graph2.remove_transfer_set(&deleted_transfers2);
             if graph1p.is_iso(graph2p) {
-                distance += v1.len();
-                distance += v2.len();
                 found_it = true;
-                break;
+                //println!("found it !");
+                distance += size_deletion_set;
+                break
             }
         }
         if found_it {
-            break;
+            break
         }
     }
     assert!(found_it);
 
+    return distance;
+}
+
+#[pyfunction]
+fn transfer_edition_distance(network1 : Vec<String>, network2 : Vec<String>) -> PyResult<usize> {
+    let distance : usize = transfer_edition_distance_rust(network1, network2);
     return Ok(distance);
 }
 
@@ -458,6 +580,26 @@ mod tests {
     fn test_to_string() {
         let cano_label : CanonicalLabel = CanonicalLabel {clade : vec![1,2,3], rank : 8};
         assert_eq!(cano_label.to_string(),"123-8".to_string());
+    }
+
+    #[test]
+    fn test_powerset() {
+        let vec : Vec<(usize, usize)> = vec![(0,1),(1,2)];
+        let subsets : Vec<Vec<&(usize,usize)>> = powerset(&vec); 
+        let result_vec: Vec<Vec<(usize, usize)>> = vec![vec![], vec![(0,1)], vec![(1,2)], vec![(0,1),(1,2)]];
+        //println!("{:?}", subsets);
+        //println!("{:?}", result_vec);
+        for k in 0..result_vec.len() {
+            let subset : Vec<(usize,usize)> = result_vec[k].clone();
+            let subset2 : Vec<&(usize, usize)> = subsets[k].clone();
+            assert_eq!(subset.len(),subset2.len());
+            for l in 0..subset.len() {
+                let (u1,v1) : (usize,usize) = subset[l];
+                let &(u2,v2) : &(usize,usize) = subset2[l];
+                assert_eq!(u1,u2);
+                assert_eq!(v1,v2);
+            }
+        }
     }
 
     #[test]

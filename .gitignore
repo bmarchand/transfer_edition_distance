@@ -28,3 +28,5 @@ target
 level_k_lgt_generator/random_lgt_networks/*.gr
 
 *.pyc
+.ipynb_checkpoints/*
+ted_module/.ipynb_checkpoints/*

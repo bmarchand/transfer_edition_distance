@@ -4,37 +4,18 @@ import os
 from ted_module import transfer_edition_distance
 import pandas as pd
 
-def timeout(seconds, action=None):
-    """Calls any function with timeout after 'seconds'.
-       If a timeout occurs, 'action' will be returned or called if
-       it is a function-like object.
-    """
-    def handler(queue, func, args, kwargs):
-        queue.put(func(*args, **kwargs))
+reference_results = {} 
 
-    def decorator(func):
+try:
+    df = pd.read_csv("benchmark_results_reference.csv")
+    for line in df.itertuples():
+        reference_results[(line.fname1, line.fname2)] = line.runtime, line.distance
+except:
+    pass
+print(reference_results)
 
-        def wraps(*args, **kwargs):
-            q = Queue()
-            p = Process(target=handler, args=(q, func, args, kwargs))
-            p.start()
-            p.join(timeout=seconds)
-            if p.is_alive():
-                p.terminate()
-                p.join()
-                if hasattr(action, '__call__'):
-                    return action()
-                else:
-                    return action
-            else:
-                return q.get()
-
-        return wraps
-
-    return decorator
-
-max_N = 1000
-num_of_networks = 150
+max_N = 1000000             # no limit
+num_of_networks = 500
 
 network_size = {}
 nleaves = {}
@@ -68,6 +49,9 @@ for fname in os.listdir(random_network_dir):
     network_size[fname] = int(nvertices)
     nleaves[fname] = len(list_leaves(random_network_dir+fname))
 
+names1 = []
+names2 = []
+
 nnodes_network1 = []
 nnodes_network2 = []
 
@@ -79,6 +63,8 @@ ntransfers_network2 = []
 
 runtime = []
 
+distance = []
+
 print("starting to run things")
 
 for fname1 in os.listdir(random_network_dir)[:num_of_networks]:
@@ -87,7 +73,6 @@ for fname1 in os.listdir(random_network_dir)[:num_of_networks]:
     for fname2 in os.listdir(random_network_dir)[:num_of_networks]:
         if fname2=="folder.keep":
             continue
-
 
         nleaves1 = nleaves[fname1] 
         nleaves2 = nleaves[fname2]
@@ -106,6 +91,13 @@ for fname1 in os.listdir(random_network_dir)[:num_of_networks]:
             t0 = time.time()
             d = transfer_edition_distance(L1,L2)
             runtime.append(time.time() - t0)
+            distance.append(d)
+
+            try:
+                print(d,reference_results[(fname1,fname2)][1])
+                assert(d==reference_results[(fname1,fname2)][1])
+            except KeyError:
+                pass
 
             nnodes_network1.append(network_size[fname1])
             nnodes_network2.append(network_size[fname2])
@@ -119,13 +111,19 @@ for fname1 in os.listdir(random_network_dir)[:num_of_networks]:
             ntransfers_network1.append(ntransfers1)
             ntransfers_network2.append(ntransfers2)
 
+            names1.append(fname1)
+            names2.append(fname2)
+
 d = {
+    'fname1' : names1,
+    'fname2' : names2,
     'nnodes_network1' : nnodes_network1,
     'nnodes_network2' : nnodes_network2,
     'nleaves_network1' : nleaves_network1,
     'nleaves_network2' : nleaves_network2,
     'ntransfers_network1' : ntransfers_network1,
     'ntransfers_network2' : ntransfers_network2,
+    'distance': distance,
     'runtime' : runtime
         }
 

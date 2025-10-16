@@ -61,7 +61,7 @@ def test_small_networks2():
 
     d = transfer_edition_distance(L1,L2)
 
-    assert(d == 1)
+    assert(d == 2)
 
 def test_small_networks3():
     L1 = ["1 2 tree",
@@ -102,4 +102,4 @@ def test_small_networks3():
 
     d = transfer_edition_distance(L1,L2)
 
-    assert(d == 4)
+    assert(d == 2)
