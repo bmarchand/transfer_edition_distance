@@ -1,0 +1,12 @@
+[submodule "experiments/alitzel_data/ptns"]
+	path = experiments/alitzel_data/ptns
+	url = git@github.com:AliLopSan/ptns.git
+[submodule "experiments/alitzel_data/tralda"]
+	path = experiments/alitzel_data/tralda
+	url = git@github.com:david-schaller/tralda.git
+[submodule "experiments/alitzel_data/AsymmeTree"]
+	path = experiments/alitzel_data/AsymmeTree
+	url = git@github.com:david-schaller/AsymmeTree.git
+[submodule "experiments/alitzel_data/Genesis-Sankoff"]
+	path = experiments/alitzel_data/Genesis-Sankoff
+	url = git@github.com:AliLopSan/Genesis-Sankoff.git
