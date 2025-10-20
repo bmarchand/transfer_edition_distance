@@ -32,7 +32,8 @@ struct Graph {
     out_ngbh : HashMap<usize, Vec<usize>>,
     in_ngbh : HashMap<usize, Vec<usize>>,
     edge_label: HashMap<(usize, usize), EdgeType>, 
-    clade : HashMap<usize, Vec<usize>> 
+    clade : HashMap<usize, Vec<usize>>,
+    weight : HashMap<(usize,usize), f64>
 }
 
 /// The same_clade function assumes the clades are sorted
@@ -167,6 +168,7 @@ impl Graph {
             out_ngbh : self.out_ngbh.clone(),
             edge_label : self.edge_label.clone(),
             clade : self.clade.clone(),
+            weight : self.weight.clone(),
         };
 
         for (u,v) in transfers_to_remove {
@@ -217,26 +219,34 @@ impl Graph {
         return return_value;
     }
 
-    fn remove_clade(&mut self, clade_to_remove : &Vec<usize>) -> usize {
 
-        let mut nops : usize = 0;
+    /// Modifies the network to remove the clade, and returns
+    /// the cost of removing this clade.
+    fn remove_clade(&mut self, clade_to_remove : &Vec<usize>) -> f64 {
+
+        let mut cost : f64 = 0f64;
 
         let nodes : Vec<usize> = self.clade.keys().cloned().collect();
 
         for node in nodes {
             let clade : &Vec<usize> = self.clade.get(&node).unwrap();
             if same_clade(clade_to_remove, clade) {
-                nops += self.remove_node(node);
+                //println!("from remove clade");
+                cost += self.remove_node(node);
             }
         }
 
-        return nops;
+        return cost;
     }
 
+    /// The input node is contracted into its tree parent. 
+    ///
+    /// Any transfer adjacent to this node is removed. 
+    /// When this is the case, the weight is added to 
+    /// the returned cost.
     /// 
-    ///  remove_node assumes the network is binary !!!!
-    /// 
-    fn remove_node(&mut self, node : usize) -> usize {
+    fn remove_node(&mut self, node : usize) -> f64 {
+        //println!("removing node {:?}", node);
 
         // find tree parent and tree children
         let mut tree_parents : Vec<usize> = Vec::new();
@@ -260,10 +270,8 @@ impl Graph {
             tree_child_in_ngbh.push(tree_parent);
         }
 
-        // the edge_label of new edge is set, the old edge is removed
-        self.edge_label.remove(&(tree_parent, node));
+        // the edge_labels of the new edges are set
         for tree_child in &tree_children {
-            self.edge_label.remove(&(node,*tree_child));
             self.edge_label.insert((tree_parent,*tree_child), EdgeType::TREE); 
         }
 
@@ -271,6 +279,31 @@ impl Graph {
         let tree_parent_out_ngbh : &mut Vec<usize> = self.out_ngbh.get_mut(&tree_parent).unwrap();
         for tree_child in &tree_children {
             tree_parent_out_ngbh.push(*tree_child);
+        }
+
+        // are we removing transfers ? and if so what are their weight ?
+        let mut weight : f64 = 0f64;
+        let mut found_transfer : bool = false;
+        for in_neighbor in self.in_ngbh.get(&node).unwrap() {
+            if !self.is_tree_edge(*in_neighbor, node) {
+                weight += *self.weight.get(&(*in_neighbor,node)).unwrap_or(&1f64);
+                found_transfer = true;
+            }
+        }
+        for out_neighbor in self.out_ngbh.get(&node).unwrap() {
+            if !self.is_tree_edge(node, *out_neighbor) {
+                weight += *self.weight.get(&(node, *out_neighbor)).unwrap_or(&1f64);
+                found_transfer = true;
+            }
+        }
+        if !found_transfer {
+            weight = 1f64;
+        }
+
+        // the old edge labels are removed
+        self.edge_label.remove(&(tree_parent, node));
+        for tree_child in &tree_children {
+            self.edge_label.remove(&(node,*tree_child));
         }
 
         // the neighborhoods of other nodes are filtered to remove node
@@ -287,7 +320,7 @@ impl Graph {
         self.out_ngbh.remove_entry(&node);
         self.clade.remove_entry(&node);
 
-        return 1;
+        return weight;
     }
 
     fn has_clade(&self, test_clade : &Vec<usize>) -> bool {
@@ -325,19 +358,21 @@ impl Graph {
     }
 }
 
-fn parse_graph(list_edges : Vec<String>) -> Graph {
+fn parse_graph_weighted(list_edges : Vec<String>) -> Graph {
 
     let mut graph : Graph = Graph {
         out_ngbh : HashMap::new(),
         in_ngbh : HashMap::new(),
         edge_label : HashMap::new(),
         clade : HashMap::new(),
+        weight : HashMap::new(),
     };
 
     for line in list_edges {
         let elements : Vec<&str> = line.split_whitespace().collect();
         let u : usize = elements[0].parse().unwrap();
         let v : usize = elements[1].parse().unwrap();
+        //let weight : usize = elements[2].parse().unwrap();
 
         // insert v as out ngbh of u
         if let Some(vec) = graph.out_ngbh.get_mut(&u) {
@@ -410,6 +445,98 @@ fn parse_graph(list_edges : Vec<String>) -> Graph {
 
 }
 
+fn parse_graph(list_edges : Vec<String>) -> Graph {
+
+    let mut graph : Graph = Graph {
+        out_ngbh : HashMap::new(),
+        in_ngbh : HashMap::new(),
+        edge_label : HashMap::new(),
+        clade : HashMap::new(),
+        weight : HashMap::new(),
+    };
+
+    for line in list_edges {
+        let elements : Vec<&str> = line.split_whitespace().collect();
+        let u : usize = elements[0].parse().unwrap();
+        let v : usize = elements[1].parse().unwrap();
+
+        // insert v as out ngbh of u
+        if let Some(vec) = graph.out_ngbh.get_mut(&u) {
+            vec.push(v);
+        }
+        else {
+            graph.out_ngbh.insert(u, vec![v]);
+        }
+
+        // insert u as out ngbh of v
+        if let Some(vec) = graph.in_ngbh.get_mut(&v) {
+            vec.push(u);
+        }
+        else {
+            graph.in_ngbh.insert(v, vec![u]);
+        }
+
+        // make sure u and v have (possibly empty) ngbhs nonetheless
+        graph.in_ngbh.entry(u).or_insert(Vec::new());
+        graph.in_ngbh.entry(v).or_insert(Vec::new());
+        graph.out_ngbh.entry(v).or_insert(Vec::new());
+        graph.out_ngbh.entry(u).or_insert(Vec::new());
+
+        let edge_type: EdgeType = match elements[2] {
+            "tree" => EdgeType::TREE,
+            "transfer" => EdgeType::TRANSFER,
+            _ => panic!("not a known type"),
+        };
+        graph.edge_label.insert((u,v), edge_type);
+    }
+
+    // find root 
+    let roots : Vec<usize> = graph.in_ngbh
+        .iter()
+        .filter(|(_,&ref in_ngbhood)| (*in_ngbhood).len()==0)
+        .map(|(node,_)| *node)
+        .collect();
+
+    assert!(roots.len()==1);
+    let root = roots[0];
+
+    fn fill_clade_map(node : usize, graph : &mut Graph) -> Vec<usize> {
+
+        let out_neighbors = graph.out_ngbh.get(&node).unwrap().clone();
+
+        let mut no_tree_descendant : bool = true;
+        for v in &out_neighbors {
+            if graph.is_tree_edge(node, *v) {
+                no_tree_descendant = false;
+            }
+        }
+        if no_tree_descendant {
+            graph.clade.insert(node, vec![node]); 
+            return vec![node];
+        }
+
+        let mut new_clade : Vec<usize> = Vec::new();
+
+        for child in out_neighbors {
+            if *graph.edge_label.get(&(node,child)).unwrap()==EdgeType::TREE {
+                let child_clade : Vec<usize> = fill_clade_map(child, graph);
+                for v in child_clade {
+                    new_clade.push(v);
+                }
+            }
+        }
+
+        new_clade.sort();
+        graph.clade.insert(node, new_clade.clone());
+        return new_clade;
+    }
+
+    fill_clade_map(root, &mut graph);
+
+    return graph;
+
+}
+
 fn all_integers_with_weight_k(n : u64, k : u64) -> Vec<u64> {
     let mut result : Vec<u64> = Vec::new();
     if k==0 {
@@ -431,16 +558,130 @@ fn all_integers_with_weight_k(n : u64, k : u64) -> Vec<u64> {
     return result;
 }
 
-//fn powerset(v : &[(usize,usize)]) -> Vec<Vec<&(usize,usize)>> {
-//    (0..2usize.pow(v.len() as u32)).map(|i| {
-//        v.iter()
-//            .enumerate()
-//            .filter(|&(t,_)| (i >> t) % 2 == 1)
-//            .map(|(_, element)| element)
-//            .collect()
-//    }).collect()
-//}
+fn powerset(v : &[(usize,usize)]) -> Vec<Vec<&(usize,usize)>> {
+    (0..2usize.pow(v.len() as u32)).map(|i| {
+        v.iter()
+            .enumerate()
+            .filter(|&(t,_)| (i >> t) % 2 == 1)
+            .map(|(_, element)| element)
+            .collect()
+    }).collect()
+}
 
+pub fn transfer_edition_distance_weighted_rust(network1 : Vec<String>, network2 : Vec<String>) -> f64 {
+    let mut graph1 : Graph = parse_graph_weighted(network1);
+    let mut graph2 : Graph = parse_graph_weighted(network2);
+
+    let mut distance : f64 = 0f64;
+
+    // Start of block ensuring same base tree
+    let clades1 : Vec<Vec<usize>> = graph1.list_clades();
+    for clade1 in &clades1 {
+        if !graph2.has_clade(clade1) {
+            let cost : f64 = graph1.remove_clade(clade1);
+            distance += cost;
+        }
+    }
+
+    let clades2 : Vec<Vec<usize>> = graph2.list_clades();
+    for clade2 in &clades2 {
+        if !graph1.has_clade(clade2) {
+            let cost : f64 = graph2.remove_clade(clade2);
+            distance += cost;
+        }
+    }
+
+    graph1.remove_degree_2_nodes();
+    graph2.remove_degree_2_nodes();
+    // end of block ensuring same base tree
+    
+    // preprocessing rule: if there exists a clade_a -> clade_b
+    // transfer in graph1 but not in graph2, remove it.
+    for (u,v) in graph1.list_transfers() {
+        let clade_a1 = graph1.clade.get(&u).unwrap();
+        let clade_b1 = graph1.clade.get(&v).unwrap();
+
+        let mut found_it : bool = false;
+
+        for (w,x) in graph2.list_transfers() {
+            let clade_a2 = graph2.clade.get(&w).unwrap();
+            let clade_b2 = graph2.clade.get(&x).unwrap();
+            
+            if same_clade(&clade_a1, &clade_a2) && same_clade(&clade_b1, &clade_b2) {
+                found_it = true;
+                break
+            }
+        }
+        if !found_it {
+            graph1.remove_transfer(u,v);
+            distance += graph1.weight.get(&(u,v)).unwrap();
+        }
+        
+    }
+    
+    for (u,v) in graph2.list_transfers() {
+        let clade_a2 = graph2.clade.get(&u).unwrap();
+        let clade_b2 = graph2.clade.get(&v).unwrap();
+
+        let mut found_it : bool = false;
+
+        for (w,x) in graph1.list_transfers() {
+            let clade_a1 = graph1.clade.get(&w).unwrap();
+            let clade_b1 = graph1.clade.get(&x).unwrap();
+            
+            if same_clade(&clade_a1, &clade_a2) && same_clade(&clade_b1, &clade_b2) {
+                found_it = true;
+                break
+            }
+        }
+        if !found_it {
+            graph2.remove_transfer(u,v);
+            distance += graph2.weight.get(&(u,v)).unwrap();
+        }
+    }
+
+    graph1.remove_degree_2_nodes();
+    graph2.remove_degree_2_nodes();
+    // end preprocessing
+    
+    let mut best_score : f64 = f64::MAX;
+
+    for v1 in powerset(&graph1.list_transfers()) {
+        for v2 in powerset(&graph2.list_transfers()) {
+            let graph1p : Graph = graph1.remove_transfer_set(&v1);
+            let graph2p : Graph = graph2.remove_transfer_set(&v2);
+            let mut weight : f64 = 0f64;
+            for (u,v) in &v1 {
+                weight += graph1.weight.get(&(*u,*v)).unwrap();
+            }
+            for (u,v) in &v2 {
+                weight += graph2.weight.get(&(*u,*v)).unwrap();
+            }
+            if graph1p.is_iso(graph2p) {
+                if weight < best_score {
+                    best_score = weight;
+                }
+            }
+        }
+    }
+
+    return distance + best_score;
+}
+
+/// Given two LGT networks given as lists of edges, computes the transfer edition distance
+///
+/// This computes the unweighted transfer distance, between two fully explicit
+/// LGT networks (see other variants of this function, namely transfer_edition_distance_weighted
+/// and transfer_edition_distance_unordered, for these cases)
+///
+/// the weighted (but ordered) version is a separate function because it prevents from using
+/// one of the optimizations used here, namely the iteration over the "deletion sets" ordered
+/// by size. Indeed, in the unweighted version, one can just iterate over the deletion
+/// sets ordered by size, and stop as soon as a valid deletion set (i.e. yielding two
+/// isomorphic networks) is found. 
+///
+/// Example of input: vec!["1 2 tree","2 3 tree","1 4 tree","4 5 tree","2 4 transfer"], {another
+/// vec}
 pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<String>) -> usize {
     let mut graph1 : Graph = parse_graph(network1);
     let mut graph2 : Graph = parse_graph(network2);
@@ -451,7 +692,7 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
     let clades1 : Vec<Vec<usize>> = graph1.list_clades();
     for clade1 in &clades1 {
         if !graph2.has_clade(clade1) {
-            let cost : usize = graph1.remove_clade(clade1);
+            let cost : usize = graph1.remove_clade(clade1) as usize;
             distance += cost;
         }
     }
@@ -459,7 +700,7 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
     let clades2 : Vec<Vec<usize>> = graph2.list_clades();
     for clade2 in &clades2 {
         if !graph1.has_clade(clade2) {
-            let cost : usize = graph2.remove_clade(clade2);
+            let cost : usize = graph2.remove_clade(clade2) as usize;
             distance += cost;
         }
     }
@@ -467,10 +708,6 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
     graph1.remove_degree_2_nodes();
     graph2.remove_degree_2_nodes();
     // end of block ensuring same base tree
-   
-    //println!("distance after clade removal, before preprocess {:?}", distance);
-    //println!("cano1 {:?}", graph1.canonical_form());
-    //println!("cano2 {:?}", graph2.canonical_form());
 
     // preprocessing rule: if there exists a clade_a -> clade_b
     // transfer in graph1 but not in graph2, remove it.
@@ -521,19 +758,13 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
     graph2.remove_degree_2_nodes();
     // end preprocessing
 
-    //println!("distance before actual comp {:?}", distance);
-
     let transfers1 : Vec<(usize,usize)> = graph1.list_transfers(); 
     let transfers2 : Vec<(usize,usize)> = graph2.list_transfers(); 
-    
-    //println!("{:?} {:?}", transfers1,transfers2);
     
     let mut found_it : bool = false;
 
     for size_deletion_set in 0..=(transfers1.len()+transfers2.len()) {
-        //println!("size deletion set {:?}", size_deletion_set);
         for x in all_integers_with_weight_k((transfers1.len()+transfers2.len()).try_into().unwrap(), size_deletion_set.try_into().unwrap()) {
-            //println!("{:?}",x);
             let deleted_transfers1 : Vec<&(usize,usize)> = transfers1.iter()
                 .enumerate()
                 .filter(|&(t,_)| (x >> t) % 2 == 1)
@@ -546,8 +777,6 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
                 .map(|(_, element)| element)
                 .collect(); 
 
-            //println!("deleted_transfers1 {:?}", deleted_transfers1);
-            //println!("deleted_transfers2 {:?}", deleted_transfers2);
             let graph1p : Graph = graph1.remove_transfer_set(&deleted_transfers1);
             let graph2p : Graph = graph2.remove_transfer_set(&deleted_transfers2);
             if graph1p.is_iso(graph2p) {
@@ -566,9 +795,78 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
     return distance;
 }
 
+fn transfer_edition_distance_unordered_rust(network1 : Vec<String>, network2 : Vec<String>) -> usize {
+
+    let mut graph1 : Graph = parse_graph(network1);
+    let mut graph2 : Graph = parse_graph(network2);
+    
+    let mut distance : usize = 0;
+
+
+    // Start of block ensuring same base tree
+    let clades1 : Vec<Vec<usize>> = graph1.list_clades();
+    for clade1 in &clades1 {
+        if !graph2.has_clade(clade1) {
+            let cost : usize = graph1.remove_clade(clade1) as usize;
+            distance += cost;
+        }
+    }
+
+    let clades2 : Vec<Vec<usize>> = graph2.list_clades();
+    for clade2 in &clades2 {
+        if !graph1.has_clade(clade2) {
+            let cost : usize = graph2.remove_clade(clade2) as usize;
+            distance += cost;
+        }
+    }
+
+    graph1.remove_degree_2_nodes();
+    graph2.remove_degree_2_nodes();
+    // end of block ensuring same base tree
+    
+    let mut intersection_size : usize = 0;
+
+    for (u1,v1) in graph1.list_transfers() {
+        let clade_u1  = graph1.clade.get(&u1).unwrap();
+        let clade_v1  = graph1.clade.get(&v1).unwrap();
+
+        let mut is_in_intersect : bool = false;
+
+        for (u2,v2) in graph2.list_transfers() {
+            let clade_u2  = graph2.clade.get(&u2).unwrap();
+            let clade_v2  = graph2.clade.get(&v2).unwrap();
+
+            if same_clade(&clade_u1, &clade_u2) && same_clade(&clade_v1, &clade_v2) {
+                is_in_intersect = true;
+                break;
+            }
+        }
+
+        if is_in_intersect {
+            intersection_size += 1;
+        }
+    }
+
+    distance += graph1.list_transfers().len()+graph2.list_transfers().len()-2*intersection_size;
+
+    return distance;
+}
+
 #[pyfunction]
 fn transfer_edition_distance(network1 : Vec<String>, network2 : Vec<String>) -> PyResult<usize> {
     let distance : usize = transfer_edition_distance_rust(network1, network2);
+    return Ok(distance);
+}
+
+#[pyfunction]
+fn transfer_edition_distance_weighted(network1 : Vec<String>, network2 : Vec<String>) -> PyResult<f64> {
+    let distance : f64 = transfer_edition_distance_weighted_rust(network1, network2);
+    return Ok(distance);
+}
+
+#[pyfunction]
+fn transfer_edition_distance_unordered(network1 : Vec<String>, network2 : Vec<String>) -> PyResult<usize> {
+    let distance : usize = transfer_edition_distance_unordered_rust(network1, network2);
     return Ok(distance);
 }
 
@@ -620,6 +918,8 @@ mod tests {
 #[pymodule]
 fn ted_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(transfer_edition_distance,m)?)?;
+    m.add_function(wrap_pyfunction!(transfer_edition_distance_weighted,m)?)?;
+    m.add_function(wrap_pyfunction!(transfer_edition_distance_unordered,m)?)?;
     Ok(())
 }
 
