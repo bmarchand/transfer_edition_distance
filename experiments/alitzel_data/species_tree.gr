@@ -1,0 +1,70 @@
+nvertices nedges 70 69
+Bacteria 'Mucispirillum schaedleri ASF457' tree
+Bacteria 'Cloacibacillus porcorum' tree
+Bacteria 'Treponema succinifaciens DSM 2489' tree
+Bacteria Campylobacterales tree
+Bacteria Pseudomonadota tree
+Bacteria Bacillota tree
+Bacteria Actinomycetota tree
+Bacteria Bacteroidales tree
+Bacteroidales 'Porphyromonas asaccharolytica DSM 20707' tree
+Bacteroidales 'Alistipes finegoldii DSM 17242' tree
+Bacteroidales Bacteroides tree
+Bacteroides 'Bacteroides nordii' tree
+Bacteroides 'Bacteroides thetaiotaomicron VPI-5482' tree
+Bacteroides 'Bacteroides uniformis' tree
+Actinomycetota Coriobacteriia tree
+Actinomycetota Actinomycetes tree
+Actinomycetes Bifidobacterium tree
+Actinomycetes Micrococcales tree
+Actinomycetes 'Streptomyces albidoflavus' tree
+Actinomycetes Mycobacteriales tree
+Mycobacteriales Corynebacterium tree
+Mycobacteriales 'Mycolicibacterium aurum' tree
+Corynebacterium 'Corynebacterium kefirresidentii' tree
+Corynebacterium 'Corynebacterium amycolatum' tree
+Micrococcales 'Leucobacter triazinivorans' tree
+Micrococcales Micrococcaceae tree
+Micrococcaceae 'Arthrobacter sp. ZXY-2' tree
+Micrococcaceae 'Kocuria rhizophila DC2201' tree
+Micrococcaceae 'Paenarthrobacter aurescens TC1' tree
+Bifidobacterium 'Bifidobacterium kashiwanohense PV20-2' tree
+Bifidobacterium 'Bifidobacterium thermophilum RBL67' tree
+Bifidobacterium 'Bifidobacterium dentium JCM 1195 = DSM 20436' tree
+Bifidobacterium 'Bifidobacterium animalis subsp. lactis CNCM I-2494' tree
+Coriobacteriia 'Eggerthella lenta DSM 2243' tree
+Coriobacteriia 'Collinsella aerofaciens' tree
+Bacillota 'Anaerococcus prevotii DSM 20548' tree
+Bacillota 'Turicibacter sanguinis' tree
+Bacillota Eubacteriales tree
+Bacillota Bacilli tree
+Bacilli Lactobacillus tree
+Bacilli Staphylococcus tree
+Staphylococcus 'Staphylococcus capitis subsp. capitis' tree
+Staphylococcus 'Staphylococcus caprae' tree
+Lactobacillus 'Lactobacillus amylovorus GRL1118' tree
+Lactobacillus 'Lactobacillus gallinarum' tree
+Eubacteriales 'Intestinimonas butyriciproducens' tree
+Eubacteriales Lachnospiraceae tree
+Lachnospiraceae 'Blautia hansenii DSM 20583' tree
+Lachnospiraceae 'Coprococcus eutactus ATCC 27759' tree
+Lachnospiraceae '[Ruminococcus] gnavus ATCC 29149' tree
+Lachnospiraceae Dorea tree
+Dorea 'Dorea longicatena' tree
+Dorea 'Dorea formicigenerans' tree
+Pseudomonadota 'Leisingera aquaemixtae' tree
+Pseudomonadota Burkholderiales tree
+Pseudomonadota Gammaproteobacteria tree
+Gammaproteobacteria 'Moritella viscosa' tree
+Gammaproteobacteria 'Pseudomonas viridiflava' tree
+Burkholderiales Comamonadaceae tree
+Burkholderiales Burkholderiaceae tree
+Burkholderiaceae 'Ralstonia pickettii 12D' tree
+Burkholderiaceae 'Burkholderia ambifaria AMMD' tree
+Burkholderiaceae 'Cupriavidus pauculus' tree
+Comamonadaceae 'Rhodoferax koreense' tree
+Comamonadaceae 'Acidovorax sp. RAC01' tree
+Campylobacterales 'Helicobacter ailurogastricus' tree
+Campylobacterales Campylobacter tree
+Campylobacter 'Campylobacter ureolyticus RIGS 9880' tree
+Campylobacter 'Campylobacter hominis ATCC BAA-381' tree
