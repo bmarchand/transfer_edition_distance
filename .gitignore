@@ -29,5 +29,11 @@ target
 experiments/experiment_on_alitzel_data1/networks/*.gr
 
 *.pyc
-.ipynb_checkpoints/*
+**/.ipynb_checkpoints/*
 ted_module/.ipynb_checkpoints/*
+
+experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S50/true_gene_trees/gene_tree*.json
+experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S50/fasta_files/*.faa
+experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S50/alignments/alignment*.phylip
+experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S5/true_gene_trees/gene_tree*.json
+experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/*

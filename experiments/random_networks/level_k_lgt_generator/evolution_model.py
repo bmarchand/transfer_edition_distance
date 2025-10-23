@@ -158,7 +158,9 @@ def export_network(network, filename):
         print(u,v,edge_type,file=f)
     f.close()
 
-def simulation(num_steps,prob_lgt,wint,wext):
+def simulation(num_steps,prob_lgt,wint,wext,seed=None):
+    if seed:
+        random.seed(seed)
     net = nx.DiGraph()
     net.add_edge(1,2,edge_type='tree')
     net.add_edge(1,3,edge_type='tree')
@@ -192,29 +194,39 @@ def local_level(G,bicc):
 # In[16]:
 
 
-number_of_experiments = 500
-values_of_n = [30,50]
+number_of_experiments = 50
+values_of_n = [30,80,130]
 values_of_alpha = [0.1, 0.3]
 values_of_beta = [0.01,0.02,0.05,0.1,0.2,1,5,10,20,50,100]
 stats_level = {}
 stats_numblobs = {}
 
-cnt = 0
+level_dict = {}
+
+def file_name(n,alpha,beta,cnt):
+    return "random_lgt_networks/network_n"+str(n)+"_alpha"+str(alpha)+"_beta"+str(beta)+"_"+str(cnt)+'.gr'
+
+seed_n = 0
 
 for (n, alpha, beta) in itertools.product(values_of_n, values_of_alpha, values_of_beta):
     print(n,alpha,beta)
     levels = []
     numblobs = []
-    for _ in range(number_of_experiments):
-        resG = simulation(n, alpha, 1, beta)
-        export_network(resG,"random_lgt_networks/network_"+str(cnt)+'.gr')
-        cnt += 1
+    for cnt in range(number_of_experiments):
+        resG = simulation(n, alpha, 1, beta, seed=seed_n)
+        seed_n += 1
         bic_comp=list(nx.biconnected_components(nx.Graph(resG)))
         rets_x_bicc=[local_level(resG,b) for b in bic_comp]
         level=max(rets_x_bicc)
+        level_dict[file_name(n,alpha,beta,cnt)] = level
+        export_network(resG,file_name(n,alpha,beta,cnt))
         levels.append(level)
         sparse=[1 for x in rets_x_bicc if x!=0]
         numblobs.append(sum(sparse))
+
+import json
+with open("level_dict.json","w") as f:
+    json.dump(level_dict, f)
 #    stats_level[(n, alpha, beta)] = float(sum(levels))/len(levels)
 #    stats_numblobs[(n, alpha, beta)] = float(sum(numblobs))/len(numblobs)
 #

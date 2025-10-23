@@ -17,7 +17,7 @@ subst_model = SubstModel('a', 'JTT')
 gs = GenomeSimulator(S, outdir='../asymmetree_trees/more_5_50/S5/')
 
 # simulate 250 gene trees along the species tree S (and write them to file)
-gs.simulate_gene_trees(250, dupl_rate=1.0, loss_rate=0.5,
+gs.simulate_gene_trees(10, dupl_rate=1.0, loss_rate=0.5,
                        base_rate=('gamma', 1.0, 1.0),
                        prohibit_extinction='per_species')
 

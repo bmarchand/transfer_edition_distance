@@ -537,21 +537,21 @@ fn parse_graph(list_edges : Vec<String>) -> Graph {
 
 }
 
-fn all_integers_with_weight_k(n : u64, k : u64) -> Vec<u64> {
-    let mut result : Vec<u64> = Vec::new();
+fn all_integers_with_weight_k(n : u128, k : u128) -> Vec<u128> {
+    let mut result : Vec<u128> = Vec::new();
     if k==0 {
         result.push(0);
         return result;
     }
 
-    let mut set : u64 = (1 << k) - 1;
-    let limit : u64 = 1 << n;
+    let mut set : u128 = (1 << k) - 1;
+    let limit : u128 = 1 << n;
 
     while set < limit 
     {
         result.push(set);
-        let c : u64 = set & set.wrapping_neg();
-        let r : u64 = set + c;
+        let c : u128 = set & set.wrapping_neg();
+        let r : u128 = set + c;
         //println!("c {:?}",c);
         set = ((( r ^ set ) >> 2) / c ) |  r;
     }
@@ -762,6 +762,7 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
     let transfers2 : Vec<(usize,usize)> = graph2.list_transfers(); 
     
     let mut found_it : bool = false;
+
 
     for size_deletion_set in 0..=(transfers1.len()+transfers2.len()) {
         for x in all_integers_with_weight_k((transfers1.len()+transfers2.len()).try_into().unwrap(), size_deletion_set.try_into().unwrap()) {

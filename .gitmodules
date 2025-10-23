@@ -10,3 +10,6 @@
 [submodule "experiments/alitzel_data/Genesis-Sankoff"]
 	path = experiments/alitzel_data/Genesis-Sankoff
 	url = git@github.com:AliLopSan/Genesis-Sankoff.git
+[submodule "experiments/asymmetree_experiment/AsymmeTree"]
+	path = experiments/asymmetree_experiment/AsymmeTree
+	url = git@github.com:david-schaller/AsymmeTree.git
