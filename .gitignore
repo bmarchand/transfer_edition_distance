@@ -37,3 +37,6 @@ experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S50/fasta_files/*.fa
 experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S50/alignments/alignment*.phylip
 experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S5/true_gene_trees/gene_tree*.json
 experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/*
+experiments/asymmetree_experiment/simulation_output/true_gene_trees/gene_tree*.json
+
+**/.python-version
