@@ -38,5 +38,15 @@ experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S50/alignments/align
 experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/S5/true_gene_trees/gene_tree*.json
 experiments/alitzel_data/scripts/asymmetree_trees/more_5_50/*
 experiments/asymmetree_experiment/simulation_output/true_gene_trees/gene_tree*.json
+experiments/asymmetree_experiment/simulation_output/**.nhx
+experiments/asymmetree_experiment/simulation_output/**.json
+experiments/asymmetree_experiment/simulation_output/**.gr
+experiments/asymmetree_experiment/simulation_output/simulated_species_trees/*.json
+experiments/asymmetree_experiment/simulation_output/simulated_species_trees/*.nhx
+experiments/asymmetree_experiment/simulation_output/simulated_species_trees/*.gr
+experiments/asymmetree_experiment/simulation_output/simulated_gene_trees/*.nhx
+experiments/asymmetree_experiment/simulation_output/simulated_gene_trees/*.gr
+experiments/asymmetree_experiment/simulation_output/simulated_gene_trees/*.json
+experiments/asymmetree_experiment/networks/*
 
 **/.python-version
