@@ -17,75 +17,93 @@ while len(queue) > 0:
         child0 = node["_child0"]
         child1 = node["_child1"]
         if child0["transferred"]==1:
-            print("transfer between ",node["reconc"],"and",child0["reconc"], node["tstamp"], child0["tstamp"])
+#            print("transfer between ",node["reconc"],"and",child0["reconc"]," at ", node["tstamp"], child0["tstamp"])
             transfers.append((node["reconc"],child0["reconc"],node["tstamp"],child0["tstamp"]))
         if child1["transferred"]==1:
-            print("transfer between ",node["reconc"],"and",child1["reconc"], node["tstamp"], child1["tstamp"])
+#            print("transfer between ",node["reconc"],"and",child1["reconc"]," at ", node["tstamp"], child1["tstamp"])
             transfers.append((node["reconc"],child1["reconc"],node["tstamp"],child1["tstamp"]))
         queue.append(child0)
         queue.append(child1)
     except KeyError:
         pass
 
-tree_adj = {}
+
+
+adj = {}
 parent = {}
+list_species_edges = []
 for line in open(species_tree).readlines()[1:]:
     u = int(line.split(" ")[0])
     v = int(line.split(" ")[1])
     parent[v] = u
     try:
-        tree_adj[u].append(v)
+        adj[u].append(v)
     except KeyError:
-        tree_adj[u] = [v]
+        adj[u] = [v]
+    list_species_edges.append((u,v))
 
-def subdivision(tree_adj, parent, timestamp, newtime, u,v):
-
-    # what is the next available integer ?
-    all_vertices = set(tree_adj.keys())
-    for _,ngbh in tree_adj.items():
-        for w in ngbh:
-            all_vertices.add(w)
-    N = max(all_vertices)
-
-
-    # where do we insert it ?
-    parent_of_new = parent[v]
-    while parent_of_new in timestamp.keys() and timestamp[parent_of_new] > newtime:
-        parent_of_new = parent[parent_of_new]
-
-    tree_adj[u].append(N+1)
-    tree_adj[u] = [w for w in tree_adj[u] if w!=v]
-    tree_adj[N+1] = [v]
-    parent[N+1] = u
-    parent[v] = N+1
-    return tree_adj, parent, N+1
-
-print(tree_adj)
-print(transfers)
-
-transfer_edge_list = []
-
-for e1, e2 in transfers:
+def correct_reconc(reconc, parent_dict):
     try:
-        tree_adj, parent, x = subdivision(tree_adj, parent, e1[0], e1[1])
-    except:
-        tree_adj, parent, x = subdivision(tree_adj, parent, parent[e1], e1)
+        return reconc[0], reconc[1]
+    except TypeError:
+        return parent_dict[reconc], reconc
+
+transfers = [(correct_reconc(reconc1, parent), correct_reconc(reconc2, parent), t1, t2) for reconc1, reconc2, t1, t2 in transfers]
+
+transfers_per_edge = {}
+
+for r1,r2,t1,t2 in transfers:
     try:
-        tree_adj, parent, y = subdivision(tree_adj, parent, e2[0], e2[1])
-    except:
-        tree_adj, parent, y = subdivision(tree_adj, parent, parent[e2], e2)
+        transfers_per_edge[r1].append(t1)
+        transfers_per_edge[r1] = sorted(transfers_per_edge[r1], key = lambda x : -x)
+    except KeyError:
+        transfers_per_edge[r1] = [t1]
+    try:
+        transfers_per_edge[r2].append(t2)
+        transfers_per_edge[r2] = sorted(transfers_per_edge[r2], key = lambda x : -x)
+    except KeyError:
+        transfers_per_edge[r2] = [t2]
 
-    transfer_edge_list.append((x,y))
+N = max([max(u,v) for u,v in list_species_edges])+1
 
-nnodes = len(tree_adj.keys())
-nedges = sum([len(ngbh) for _,ngbh in tree_adj.items()])
+#for k,val in transfers_per_edge.items():
+#    print("transfers per edge", k, val)
+
+attach_point_dict = {}
+for u,v in list_species_edges:
+    if (u,v) in transfers_per_edge.keys():
+        # adding attachment points
+        for k in range(len(transfers_per_edge[(u,v)])):
+            attach_point_dict[(u,v),transfers_per_edge[(u,v)][k]] = N+k
+            adj[N+k] = []
+
+        # connecting them as a path
+        for k in range(len(transfers_per_edge[(u,v)])-1):
+            adj[N+k] = [N+k+1]
+            parent[N+k+1] = N+k
+
+        # connecting first and last
+        last = N+len(transfers_per_edge[(u,v)]) - 1
+        adj[u].append(N)
+        adj[u] = [w for w in adj[u] if w!=v]
+        adj[last].append(v)
+        parent[N] = u
+        parent[v] = last
+    
+        # update last
+        N = last+1
+
+nnodes = len(adj.keys())
+nedges = sum([len(ngbh) for _,ngbh in adj.items()])+len(transfers)
 print("nnodes","nedges",nnodes,nedges)
-for u, ngbh in tree_adj.items():
+for u, ngbh in adj.items():
     for v in ngbh:
         print(u,v,"tree")
-for x,y in transfer_edge_list:
-    print(x,y,"transfer")
 
+#print(attach_point_dict)
 
-
+for r1,r2,t1,t2 in transfers:
+    u = attach_point_dict[r1,t1]
+    v = attach_point_dict[r2,t2]
+    print(u,v,"transfer")
 
