@@ -1,0 +1,3 @@
+ranger_dtl_input/*.newick
+ranger_dtl_output/*.gr
+ranger_dtl_output/*.out

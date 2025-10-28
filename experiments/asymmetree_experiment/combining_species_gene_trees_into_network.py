@@ -1,8 +1,8 @@
 import sys
 import json
 
-species_tree = sys.argv[-2]
-gene_tree = sys.argv[-1]
+species_tree = sys.argv[-2] # gr file
+gene_tree = sys.argv[-1]    # json fil
 
 with open(gene_tree) as f:
     gene_tree_root = json.load(f)
@@ -11,24 +11,23 @@ queue = [gene_tree_root]
 
 transfers = []
 
+# building a list of transfers. 1 transfer = two 'reconc' (species tree edge or species tree leaf)
+# and two time stamps
 while len(queue) > 0:
     node = queue.pop()
     try:
         child0 = node["_child0"]
         child1 = node["_child1"]
         if child0["transferred"]==1:
-#            print("transfer between ",node["reconc"],"and",child0["reconc"]," at ", node["tstamp"], child0["tstamp"])
             transfers.append((node["reconc"],child0["reconc"],node["tstamp"],child0["tstamp"]))
         if child1["transferred"]==1:
-#            print("transfer between ",node["reconc"],"and",child1["reconc"]," at ", node["tstamp"], child1["tstamp"])
             transfers.append((node["reconc"],child1["reconc"],node["tstamp"],child1["tstamp"]))
         queue.append(child0)
         queue.append(child1)
     except KeyError:
         pass
 
-
-
+# reading species tree file
 adj = {}
 parent = {}
 list_species_edges = []
@@ -42,7 +41,14 @@ for line in open(species_tree).readlines()[1:]:
         adj[u] = [v]
     list_species_edges.append((u,v))
 
+
 def correct_reconc(reconc, parent_dict):
+    """
+    putting all reconc into the same format.
+    Indeed, some of them are edges of the species tree (lists),
+    others are single leaves (integers). They are all converted
+    into tuples coding for an edge of the species tree.
+    """
     try:
         return reconc[0], reconc[1]
     except TypeError:
@@ -50,25 +56,29 @@ def correct_reconc(reconc, parent_dict):
 
 transfers = [(correct_reconc(reconc1, parent), correct_reconc(reconc2, parent), t1, t2) for reconc1, reconc2, t1, t2 in transfers]
 
+# will store a set of timestamps per edge of the species tree.
+# converted to a sorted list afterwards. Note that
+# there may be several transfers per time stamp (especially 
+# at leaves)
 transfers_per_edge = {}
 
 for r1,r2,t1,t2 in transfers:
     try:
-        transfers_per_edge[r1].append(t1)
-        transfers_per_edge[r1] = sorted(transfers_per_edge[r1], key = lambda x : -x)
+        transfers_per_edge[r1].add(t1)
     except KeyError:
-        transfers_per_edge[r1] = [t1]
+        transfers_per_edge[r1] = set([t1])
     try:
-        transfers_per_edge[r2].append(t2)
-        transfers_per_edge[r2] = sorted(transfers_per_edge[r2], key = lambda x : -x)
+        transfers_per_edge[r2].add(t2)
     except KeyError:
-        transfers_per_edge[r2] = [t2]
+        transfers_per_edge[r2] = set([t2])
 
+for key, value in transfers_per_edge.items():
+    transfers_per_edge[key] = sorted(list(value),key=lambda x : -x)
+
+# next available label
 N = max([max(u,v) for u,v in list_species_edges])+1
 
-#for k,val in transfers_per_edge.items():
-#    print("transfers per edge", k, val)
-
+# adding new vertices (attachment points) to the graph.
 attach_point_dict = {}
 for u,v in list_species_edges:
     if (u,v) in transfers_per_edge.keys():
