@@ -27,6 +27,8 @@ while len(queue) > 0:
     except KeyError:
         pass
 
+#print("transfers", transfers, len(transfers))
+
 # reading species tree file
 adj = {}
 parent = {}
@@ -52,7 +54,10 @@ def correct_reconc(reconc, parent_dict):
     try:
         return reconc[0], reconc[1]
     except TypeError:
-        return parent_dict[reconc], reconc
+        if reconc in parent_dict.keys():
+            return parent_dict[reconc], reconc
+        else: #only happens in the rare case of a transfer involving root
+            return reconc, reconc
 
 transfers = [(correct_reconc(reconc1, parent), correct_reconc(reconc2, parent), t1, t2) for reconc1, reconc2, t1, t2 in transfers]
 
@@ -111,6 +116,13 @@ for u, ngbh in adj.items():
         print(u,v,"tree")
 
 #print(attach_point_dict)
+
+#special case of root:
+for r1,r2,t1,t2 in transfers:
+    if r1[0]==r1[1]:
+        attach_point_dict[r1,t1] = r1[0]
+    if r2[0]==r2[1]:
+        attach_point_dict[r2,t2] = r2[0]
 
 for r1,r2,t1,t2 in transfers:
     u = attach_point_dict[r1,t1]

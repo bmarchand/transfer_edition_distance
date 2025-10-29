@@ -160,7 +160,7 @@ def export_network(network, filename):
 
 def simulation(num_steps,prob_lgt,wint,wext,seed=None):
     if seed:
-        random.seed(seed)
+        random.seed(seed+1) # +1 is in case seed=0
     net = nx.DiGraph()
     net.add_edge(1,2,edge_type='tree')
     net.add_edge(1,3,edge_type='tree')
@@ -193,167 +193,38 @@ def local_level(G,bicc):
 
 # In[16]:
 
-
-number_of_experiments = 50
-values_of_n = [30,80,130]
-values_of_alpha = [0.1, 0.3]
-values_of_beta = [0.01,0.02,0.05,0.1,0.2,1,5,10,20,50,100]
-stats_level = {}
-stats_numblobs = {}
-
-level_dict = {}
-
-def file_name(n,alpha,beta,cnt):
-    return "random_lgt_networks/network_n"+str(n)+"_alpha"+str(alpha)+"_beta"+str(beta)+"_"+str(cnt)+'.gr'
-
-seed_n = 0
-
-for (n, alpha, beta) in itertools.product(values_of_n, values_of_alpha, values_of_beta):
-    print(n,alpha,beta)
-    levels = []
-    numblobs = []
-    for cnt in range(number_of_experiments):
-        resG = simulation(n, alpha, 1, beta, seed=seed_n)
-        seed_n += 1
-        bic_comp=list(nx.biconnected_components(nx.Graph(resG)))
-        rets_x_bicc=[local_level(resG,b) for b in bic_comp]
-        level=max(rets_x_bicc)
-        level_dict[file_name(n,alpha,beta,cnt)] = level
-        export_network(resG,file_name(n,alpha,beta,cnt))
-        levels.append(level)
-        sparse=[1 for x in rets_x_bicc if x!=0]
-        numblobs.append(sum(sparse))
-
-import json
-with open("level_dict.json","w") as f:
-    json.dump(level_dict, f)
-#    stats_level[(n, alpha, beta)] = float(sum(levels))/len(levels)
-#    stats_numblobs[(n, alpha, beta)] = float(sum(numblobs))/len(numblobs)
-#
-#
-## In[17]:
-#
-#
-#f = plt.figure()
-#x_positions=range(len(values_of_beta))
-#x_axis = values_of_beta
-#symbols = "ox*+"
-#i = 0
-#dibs = [None]*4
-#legends = [None]*4
-#for n in values_of_n:
-#    for alpha in values_of_alpha:
-#        to_plot = [stats_numblobs[(n, alpha, beta)] for beta in values_of_beta]
-#        dibs[i]=plt.scatter(x_positions, to_plot, marker = symbols[i], c='black')
-#        legends[i] = "n=%d, alpha=%0.1f" % (n, alpha)
-#        i += 1
-#plt.xticks(x_positions, x_axis)
-#plt.legend(dibs, legends)
-#plt.xlabel('beta')
-#plt.ylabel('avg number of nontrivial blobs')
-#plt.show()
-#f.savefig("fig10.pdf", bbox_inches='tight')
-#
-#
-## In[18]:
-#
-#
-#f = plt.figure()
-#x_positions=range(len(values_of_beta))
-#x_axis = values_of_beta
-#symbols = "ox*+"
-#i = 0
-#dibs = [None]*4
-#legends = [None]*4
-#for n in values_of_n:
-#    for alpha in values_of_alpha:
-#        to_plot = [stats_level[(n, alpha, beta)] for beta in values_of_beta]
-#        dibs[i]=plt.scatter(x_positions, to_plot, marker = symbols[i], c='black')
-#        legends[i] = "n=%d, alpha=%0.1f" % (n, alpha)
-#        i += 1
-#plt.xticks(x_positions, x_axis)
-#plt.legend(dibs, legends)
-#plt.xlabel('beta')
-#plt.ylabel('avg level')
-#plt.show()
-#f.savefig("fig11.pdf", bbox_inches='tight')
-#
-#
-## In[19]:
-#
-#
-#number_of_experiments2 = 500
-#values_of_n2 = [10,20,30]
-#values_of_alpha2 = [0,0.1,0.2,0.3,0.4]
-#values_of_beta2 = [0.01, 1, 10]
-#stats_level2 = {}
-#stats_numblobs2 = {}
-#
-#for (n, alpha, beta) in itertools.product(values_of_n2, values_of_alpha2, values_of_beta2):
-#    levels = []
-#    numblobs = []
-#    for _ in range(number_of_experiments):
-#        resG = simulation(n, alpha, 1, beta)
-#        bic_comp=list(nx.biconnected_components(nx.Graph(resG)))
-#        rets_x_bicc=[local_level(resG,b) for b in bic_comp]
-#        level=max(rets_x_bicc)
-#        levels.append(level)
-#        sparse=[1 for x in rets_x_bicc if x!=0]
-#        numblobs.append(sum(sparse))
-#    stats_level2[(n, alpha, beta)] = float(sum(levels))/len(levels)
-#    stats_numblobs2[(n, alpha, beta)] = float(sum(numblobs))/len(numblobs)
-#
-#
-## In[20]:
-#
-#
-#f = plt.figure()
-#x_positions=range(len(values_of_alpha2))
-#x_axis = values_of_alpha2
-#symbols = "ox*+"
-#i = 0
-#dibs = [None]*4
-#legends = [None]*4
-#for n in [10,30]:
-#    for beta in [0.01,10]:
-#        to_plot = [stats_level2[(n, alpha, beta)] for alpha in values_of_alpha2]
-#        dibs[i]=plt.scatter(x_positions, to_plot, marker = symbols[i], c='black')
-#        legends[i] = "n=%d, beta=%0.2f" % (n, beta)
-#        i += 1
-#plt.xticks(x_positions, x_axis)
-#plt.legend(dibs, legends)
-#plt.xlabel('alpha')
-#plt.ylabel('avg level')
-#plt.show()
-#f.savefig("fig8.pdf", bbox_inches='tight')
-#
-#
-## In[21]:
-#
-#
-#f = plt.figure()
-#x_positions=range(len(values_of_alpha2))
-#x_axis = values_of_alpha2
-#symbols = "ox*+"
-#i = 0
-#dibs = [None]*4
-#legends = [None]*4
-#for n in [10,30]:
-#    for beta in [0.01,10]:
-#        to_plot = [stats_numblobs2[(n, alpha, beta)] for alpha in values_of_alpha2]
-#        dibs[i]=plt.scatter(x_positions, to_plot, marker = symbols[i], c='black')
-#        legends[i] = "n=%d, beta=%0.2f" % (n, beta)
-#        i += 1
-#plt.xticks(x_positions, x_axis)
-#plt.legend(dibs, legends)
-#plt.xlabel('alpha')
-#plt.ylabel('avg number of nontrivial blobs')
-#plt.show()
-#f.savefig("fig9.pdf", bbox_inches='tight')
-
-
-# In[ ]:
-
-
-
-
+if __name__=="__main__":
+    number_of_experiments = 50
+    values_of_n = range(20,150,10)
+    values_of_alpha = [0.1,0.3,0.5,0.7]
+    values_of_beta = [0.01,0.1,1,10]
+    stats_level = {}
+    stats_numblobs = {}
+    
+    level_dict = {}
+    
+    def file_name(n,alpha,beta,cnt):
+        return "random_lgt_networks/network_n"+str(n)+"_alpha"+str(alpha)+"_beta"+str(beta)+"_"+str(cnt)+'.gr'
+    
+    seed_n = 2024
+    
+    for (n, alpha, beta) in itertools.product(values_of_n, values_of_alpha, values_of_beta):
+        print(n,alpha,beta)
+        levels = []
+        numblobs = []
+        for cnt in range(number_of_experiments):
+            resG = simulation(n, alpha, 1, beta, seed=seed_n)
+            seed_n *= 2
+            seed_n += 1
+            bic_comp=list(nx.biconnected_components(nx.Graph(resG)))
+            rets_x_bicc=[local_level(resG,b) for b in bic_comp]
+            level=max(rets_x_bicc)
+            level_dict[file_name(n,alpha,beta,cnt)] = level
+            export_network(resG,file_name(n,alpha,beta,cnt))
+            levels.append(level)
+            sparse=[1 for x in rets_x_bicc if x!=0]
+            numblobs.append(sum(sparse))
+    
+    import json
+    with open("level_dict.json","w") as f:
+        json.dump(level_dict, f)

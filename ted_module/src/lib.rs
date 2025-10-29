@@ -796,7 +796,7 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
     return distance;
 }
 
-fn transfer_edition_distance_unordered_rust(network1 : Vec<String>, network2 : Vec<String>) -> usize {
+pub fn transfer_edition_distance_unordered_rust(network1 : Vec<String>, network2 : Vec<String>) -> usize {
 
     let mut graph1 : Graph = parse_graph(network1);
     let mut graph2 : Graph = parse_graph(network2);

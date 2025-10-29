@@ -1,7 +1,9 @@
 import json
+import numpy as np
+import subprocess
 import time
 import os
-from ted_module import transfer_edition_distance
+#from ted_module import transfer_edition_distance
 import pandas as pd
 
 reference_results = {} 
@@ -88,6 +90,9 @@ runtime = []
 
 distance = []
 
+num_computations_per_alpha_and_n = {}
+num_data_points = 100
+
 print("starting to run things")
 print(level_dict)
 
@@ -113,11 +118,37 @@ for fname1 in os.listdir(random_network_dir):
             L1 = [l.rstrip('\n') for l in L1]
             L2 = [l.rstrip('\n') for l in L2]
 
-            t0 = time.time()
-            d = transfer_edition_distance(L1,L2)
-            runtime.append(time.time() - t0)
-            distance.append(d)
+            n1,alpha1,beta1 = extract_info(fname1)
+            n2,alpha2,beta2 = extract_info(fname2)
 
+            if alpha1!=alpha2:
+                continue
+
+
+            try:
+                num_computations_per_alpha_and_n[alpha1][network_size[fname1]] += 1
+            except KeyError:
+                num_computations_per_alpha_and_n[alpha1][network_size[fname1]] = 1
+
+            if num_computations_per_alpha_and_n[alpha1][network_size[fname1]] > num_data_points:
+                continue
+
+            command = "timeout 10s ../../ted_module/target/release/ted_module".split(" ")
+            command.append(random_network_dir+fname1)
+            command.append(random_network_dir+fname2)
+
+            t0 = time.time()
+
+            try:
+                output = subprocess.check_output(command)
+                runtime.append(time.time() - t0)
+                d = int(output.split(b" ")[3])
+            except subprocess.CalledProcessError:
+                print("timeout")
+                d = np.nan
+                runtime.append(np.nan)
+
+            distance.append(d)
             try:
                 print(d,reference_results[(fname1,fname2)][1])
                 assert(d==reference_results[(fname1,fname2)][1])
@@ -139,8 +170,6 @@ for fname1 in os.listdir(random_network_dir):
             names1.append(fname1)
             names2.append(fname2)
 
-            n1,alpha1,beta1 = extract_info(fname1)
-            n2,alpha2,beta2 = extract_info(fname2)
 
             levels1.append(level_dict['random_lgt_networks/'+fname1])
             levels2.append(level_dict['random_lgt_networks/'+fname2])
