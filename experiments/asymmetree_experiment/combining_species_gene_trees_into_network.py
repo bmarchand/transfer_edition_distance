@@ -1,8 +1,17 @@
+"""
+    Given a species tree and a gene tree simulated within it, builds the
+    ``ground truth'' network
+
+    To compare the reconstruction to what is reconstructible, the ``ground
+    truth'' network that is built here is unordered.  It is also weighted
+    (because even though it is unordered, there might be several transfers
+    between two edges of the species tree)
+"""
 import sys
 import json
 
 species_tree = sys.argv[-2] # gr file
-gene_tree = sys.argv[-1]    # json fil
+gene_tree = sys.argv[-1]    # json file
 
 with open(gene_tree) as f:
     gene_tree_root = json.load(f)

@@ -123,17 +123,20 @@ for fname1 in os.listdir(random_network_dir):
 
             if alpha1!=alpha2:
                 continue
-
-
-            try:
-                num_computations_per_alpha_and_n[alpha1][network_size[fname1]] += 1
-            except KeyError:
-                num_computations_per_alpha_and_n[alpha1][network_size[fname1]] = 1
-
-            if num_computations_per_alpha_and_n[alpha1][network_size[fname1]] > num_data_points:
+            if beta1!=beta2:
                 continue
-
-            command = "timeout 10s ../../ted_module/target/release/ted_module".split(" ")
+            if nnodes1!=nnodes2:
+                continue
+#
+#            try:
+#                num_computations_per_alpha_and_n[alpha1][network_size[fname1]] += 1
+#            except KeyError:
+#                num_computations_per_alpha_and_n[alpha1][network_size[fname1]] = 1
+#
+#            if num_computations_per_alpha_and_n[alpha1][network_size[fname1]] > num_data_points:
+#                continue
+#
+            command = "timeout 30s ../../ted_module/target/release/ted_module".split(" ")
             command.append(random_network_dir+fname1)
             command.append(random_network_dir+fname2)
 

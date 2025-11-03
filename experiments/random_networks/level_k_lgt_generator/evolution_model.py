@@ -195,9 +195,10 @@ def local_level(G,bicc):
 
 if __name__=="__main__":
     number_of_experiments = 50
-    values_of_n = range(20,150,10)
-    values_of_alpha = [0.1,0.3,0.5,0.7]
-    values_of_beta = [0.01,0.1,1,10]
+    values_of_n = [5,10,15]+list(range(20,30,50))
+#    values_of_alpha = [0.3,0.4,0.5,0.6,0.7]
+#    values_of_beta = [5**i*0.01 for i in range(4)]
+    values_of_alphabeta = [(0.1,1),(0.4,0.05),(0.7,0.01)]
     stats_level = {}
     stats_numblobs = {}
     
@@ -208,7 +209,11 @@ if __name__=="__main__":
     
     seed_n = 2024
     
-    for (n, alpha, beta) in itertools.product(values_of_n, values_of_alpha, values_of_beta):
+    for (n, alphabeta) in itertools.product(values_of_n, values_of_alphabeta):#, values_of_beta):
+        if n>15 and alphabeta==(0.7,0.01):
+            print("continuing")
+            continue
+        alpha,beta = alphabeta
         print(n,alpha,beta)
         levels = []
         numblobs = []

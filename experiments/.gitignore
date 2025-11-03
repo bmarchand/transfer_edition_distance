@@ -1,0 +1,9 @@
+asymmetree_highways_experiment/simulation_output/simulated_species_trees/*.gr
+asymmetree_experiment/ranger_dtl_output/*.out*
+asymmetree_experiment/weighted_reconstructions/*.wgr
+asymmetree_highways_experiment/simulation_output/simulated_species_trees/*.hway
+asymmetree_highways_experiment/simulation_output/simulated_species_trees/*.json
+asymmetree_highways_experiment/simulation_output/simulated_gene_trees/*.json
+asymmetree_highways_experiment/simulation_output/simulated_gene_trees/*.nhx
+asymmetree_highways_experiment/simulation_output/true_networks/*.gr
+asymmetree_highways_experiment/simulation_output/simulated_species_trees/*.nhx

@@ -1,0 +1,23 @@
+
+
+ ------------ Reconciliation for Gene Tree 1 (rooted) -------------
+Species Tree: 
+(((6,7)5,(8,9)4)3,2)1;
+
+Gene Tree: 
+(((6_0,7_0)m3,(8_0,9_0)m6)m2,2_0)m1;
+
+Reconciliation:
+6_0: Leaf Node
+7_0: Leaf Node
+m3 = LCA[6_0, 7_0]: Speciation, Mapping --> 5
+8_0: Leaf Node
+9_0: Leaf Node
+m6 = LCA[8_0, 9_0]: Speciation, Mapping --> 4
+m2 = LCA[6_0, 9_0]: Speciation, Mapping --> 3
+2_0: Leaf Node
+m1 = LCA[6_0, 2_0]: Speciation, Mapping --> 1
+
+The minimum reconciliation cost is: 0 (Duplications: 0, Transfers: 0, Losses: 0)
+Total number of optimal solutions: 1
+Total number of candidates for gene birth: 1
