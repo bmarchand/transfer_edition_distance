@@ -59,6 +59,14 @@ for u,v in transfers:
 
     transfer_edges.append((w,x))
 
+weighted_transfers = {}
+for w,x in transfer_edges:
+    try:
+        weighted_transfers[(w,x)] += 1
+    except KeyError:
+        weighted_transfers[(w,x)] = 1
+
+
 nnodes = len(species_tree_adj.keys())
 nedges = 0
 for key, value in species_tree_adj.items():
@@ -72,5 +80,5 @@ for key, value in species_tree_adj.items():
     for ngbh in value:
         print(key, ngbh, "tree")
 
-for w,x in transfer_edges:
-    print(w,x,"transfer")
+for (w,x),weight in weighted_transfers.items():
+    print(w,x,"transfer",weight)

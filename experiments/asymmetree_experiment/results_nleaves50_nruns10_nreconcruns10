@@ -1,0 +1,231 @@
+init file
+nleaves 50 num 0
+0
+the distance is 91.0 (unordered: true, weighted: true)
+1
+the distance is 66.0 (unordered: true, weighted: true)
+2
+the distance is 62.0 (unordered: true, weighted: true)
+3
+the distance is 66.0 (unordered: true, weighted: true)
+4
+the distance is 68.0 (unordered: true, weighted: true)
+5
+the distance is 80.0 (unordered: true, weighted: true)
+6
+the distance is 75.0 (unordered: true, weighted: true)
+7
+the distance is 68.0 (unordered: true, weighted: true)
+8
+the distance is 69.0 (unordered: true, weighted: true)
+9
+the distance is 81.0 (unordered: true, weighted: true)
+nleaves 50 num 1
+0
+the distance is 5.0 (unordered: true, weighted: true)
+1
+the distance is 5.0 (unordered: true, weighted: true)
+2
+the distance is 6.0 (unordered: true, weighted: true)
+3
+the distance is 6.0 (unordered: true, weighted: true)
+4
+the distance is 6.0 (unordered: true, weighted: true)
+5
+the distance is 6.0 (unordered: true, weighted: true)
+6
+the distance is 6.0 (unordered: true, weighted: true)
+7
+the distance is 3.0 (unordered: true, weighted: true)
+8
+the distance is 3.0 (unordered: true, weighted: true)
+9
+the distance is 3.0 (unordered: true, weighted: true)
+nleaves 50 num 2
+0
+the distance is 1.0 (unordered: true, weighted: true)
+1
+the distance is 5.0 (unordered: true, weighted: true)
+2
+the distance is 5.0 (unordered: true, weighted: true)
+3
+the distance is 5.0 (unordered: true, weighted: true)
+4
+the distance is 5.0 (unordered: true, weighted: true)
+5
+the distance is 5.0 (unordered: true, weighted: true)
+6
+the distance is 0.0 (unordered: true, weighted: true)
+7
+the distance is 0.0 (unordered: true, weighted: true)
+8
+the distance is 0.0 (unordered: true, weighted: true)
+9
+the distance is 0.0 (unordered: true, weighted: true)
+nleaves 50 num 3
+0
+the distance is 2.0 (unordered: true, weighted: true)
+1
+the distance is 2.0 (unordered: true, weighted: true)
+2
+the distance is 2.0 (unordered: true, weighted: true)
+3
+the distance is 2.0 (unordered: true, weighted: true)
+4
+the distance is 2.0 (unordered: true, weighted: true)
+5
+the distance is 2.0 (unordered: true, weighted: true)
+6
+the distance is 2.0 (unordered: true, weighted: true)
+7
+the distance is 2.0 (unordered: true, weighted: true)
+8
+the distance is 2.0 (unordered: true, weighted: true)
+9
+the distance is 2.0 (unordered: true, weighted: true)
+nleaves 50 num 4
+0
+the distance is 11.0 (unordered: true, weighted: true)
+1
+the distance is 11.0 (unordered: true, weighted: true)
+2
+the distance is 11.0 (unordered: true, weighted: true)
+3
+the distance is 6.0 (unordered: true, weighted: true)
+4
+the distance is 6.0 (unordered: true, weighted: true)
+5
+the distance is 6.0 (unordered: true, weighted: true)
+6
+the distance is 12.0 (unordered: true, weighted: true)
+7
+the distance is 12.0 (unordered: true, weighted: true)
+8
+the distance is 12.0 (unordered: true, weighted: true)
+9
+the distance is 12.0 (unordered: true, weighted: true)
+nleaves 50 num 5
+0
+the distance is 14.0 (unordered: true, weighted: true)
+1
+the distance is 14.0 (unordered: true, weighted: true)
+2
+the distance is 18.0 (unordered: true, weighted: true)
+3
+the distance is 10.0 (unordered: true, weighted: true)
+4
+the distance is 10.0 (unordered: true, weighted: true)
+5
+the distance is 14.0 (unordered: true, weighted: true)
+6
+the distance is 14.0 (unordered: true, weighted: true)
+7
+the distance is 19.0 (unordered: true, weighted: true)
+8
+the distance is 19.0 (unordered: true, weighted: true)
+9
+the distance is 11.0 (unordered: true, weighted: true)
+nleaves 50 num 6
+0
+the distance is 25.0 (unordered: true, weighted: true)
+1
+the distance is 27.0 (unordered: true, weighted: true)
+2
+the distance is 30.0 (unordered: true, weighted: true)
+3
+the distance is 22.0 (unordered: true, weighted: true)
+4
+the distance is 27.0 (unordered: true, weighted: true)
+5
+the distance is 33.0 (unordered: true, weighted: true)
+6
+the distance is 27.0 (unordered: true, weighted: true)
+7
+the distance is 22.0 (unordered: true, weighted: true)
+8
+the distance is 27.0 (unordered: true, weighted: true)
+9
+the distance is 20.0 (unordered: true, weighted: true)
+nleaves 50 num 7
+0
+the distance is 18.0 (unordered: true, weighted: true)
+1
+the distance is 16.0 (unordered: true, weighted: true)
+2
+the distance is 12.0 (unordered: true, weighted: true)
+3
+the distance is 16.0 (unordered: true, weighted: true)
+4
+the distance is 17.0 (unordered: true, weighted: true)
+5
+the distance is 17.0 (unordered: true, weighted: true)
+6
+the distance is 17.0 (unordered: true, weighted: true)
+7
+the distance is 15.0 (unordered: true, weighted: true)
+8
+the distance is 19.0 (unordered: true, weighted: true)
+9
+the distance is 16.0 (unordered: true, weighted: true)
+nleaves 50 num 8
+0
+the distance is 10.0 (unordered: true, weighted: true)
+1
+the distance is 10.0 (unordered: true, weighted: true)
+2
+the distance is 9.0 (unordered: true, weighted: true)
+3
+the distance is 9.0 (unordered: true, weighted: true)
+4
+the distance is 8.0 (unordered: true, weighted: true)
+5
+the distance is 8.0 (unordered: true, weighted: true)
+6
+the distance is 8.0 (unordered: true, weighted: true)
+7
+the distance is 8.0 (unordered: true, weighted: true)
+8
+the distance is 8.0 (unordered: true, weighted: true)
+9
+the distance is 8.0 (unordered: true, weighted: true)
+nleaves 50 num 9
+0
+the distance is 13.0 (unordered: true, weighted: true)
+1
+the distance is 13.0 (unordered: true, weighted: true)
+2
+the distance is 16.0 (unordered: true, weighted: true)
+3
+the distance is 15.0 (unordered: true, weighted: true)
+4
+the distance is 15.0 (unordered: true, weighted: true)
+5
+the distance is 13.0 (unordered: true, weighted: true)
+6
+the distance is 13.0 (unordered: true, weighted: true)
+7
+the distance is 13.0 (unordered: true, weighted: true)
+8
+the distance is 10.0 (unordered: true, weighted: true)
+9
+the distance is 10.0 (unordered: true, weighted: true)
+aggregated network 50 num 0
+the distance is 71.2 (unordered: true, weighted: true)
+aggregated network 50 num 1
+the distance is 4.9 (unordered: true, weighted: true)
+aggregated network 50 num 2
+the distance is 2.6 (unordered: true, weighted: true)
+aggregated network 50 num 3
+the distance is 2.0 (unordered: true, weighted: true)
+aggregated network 50 num 4
+the distance is 9.899999999999999 (unordered: true, weighted: true)
+aggregated network 50 num 5
+the distance is 14.3 (unordered: true, weighted: true)
+aggregated network 50 num 6
+the distance is 25.999999999999996 (unordered: true, weighted: true)
+aggregated network 50 num 7
+the distance is 16.3 (unordered: true, weighted: true)
+aggregated network 50 num 8
+the distance is 8.6 (unordered: true, weighted: true)
+aggregated network 50 num 9
+the distance is 13.1 (unordered: true, weighted: true)

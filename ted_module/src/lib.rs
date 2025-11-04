@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 struct CanonicalLabel {
     clade : Vec<usize>,
@@ -341,13 +342,17 @@ impl Graph {
             // if node has a different clade from its
             // tree children. To add it only once
             // we only check one tree child.
+            let mut do_we_add_it : bool = true;
             for child in self.out_ngbh.get(&node).unwrap() {
                 if self.is_tree_edge(*node,*child) {
-                    if !same_clade(clade, self.clade.get(child).unwrap()) {
-                        return_value.push(clade.clone());
+                    if same_clade(clade, self.clade.get(child).unwrap()) {
+                        do_we_add_it = false;
                         break;
                     }
                 }
+            }
+            if do_we_add_it {
+                return_value.push(clade.clone());
             }
         }
         return return_value;
@@ -372,7 +377,6 @@ fn parse_graph_weighted(list_edges : Vec<String>) -> Graph {
         let elements : Vec<&str> = line.split_whitespace().collect();
         let u : usize = elements[0].parse().unwrap();
         let v : usize = elements[1].parse().unwrap();
-        //let weight : usize = elements[2].parse().unwrap();
 
         // insert v as out ngbh of u
         if let Some(vec) = graph.out_ngbh.get_mut(&u) {
@@ -401,7 +405,13 @@ fn parse_graph_weighted(list_edges : Vec<String>) -> Graph {
             "transfer" => EdgeType::TRANSFER,
             _ => panic!("not a known type"),
         };
-        graph.edge_label.insert((u,v), edge_type);
+        graph.edge_label.insert((u,v), edge_type.clone());
+
+        if edge_type==EdgeType::TRANSFER {
+            let weight : f64 = elements[3].parse().unwrap();
+            // weight
+            graph.weight.insert((u,v), weight);
+        }
     }
 
     // find root 
@@ -566,6 +576,110 @@ fn powerset(v : &[(usize,usize)]) -> Vec<Vec<&(usize,usize)>> {
             .map(|(_, element)| element)
             .collect()
     }).collect()
+}
+
+pub fn transfer_edition_distance_unordered_weighted_rust(network1: Vec<String>, network2 : Vec<String>) -> f64 {
+
+    let mut graph1 : Graph = parse_graph_weighted(network1);
+    let mut graph2 : Graph = parse_graph_weighted(network2);
+
+    let mut distance : f64 = 0f64;
+
+    // Start of block ensuring same base tree
+    let clades1 : Vec<Vec<usize>> = graph1.list_clades();
+    for clade1 in &clades1 {
+        if !graph2.has_clade(clade1) {
+            let cost : f64 = graph1.remove_clade(clade1);
+            distance += cost;
+        }
+    }
+
+    let clades2 : Vec<Vec<usize>> = graph2.list_clades();
+    for clade2 in &clades2 {
+        if !graph1.has_clade(clade2) {
+            let cost : f64 = graph2.remove_clade(clade2);
+            distance += cost;
+        }
+    }
+
+    graph1.remove_degree_2_nodes();
+    graph2.remove_degree_2_nodes();
+    // end of block ensuring same base tree
+
+
+    let clades1 : Vec<Vec<usize>> = graph1.list_clades();
+    let clades2 : Vec<Vec<usize>> = graph2.list_clades();
+    //println!("clades1 {:?}", clades1);
+
+    // associating an integer id to every clade
+    let mut clade_id : HashMap<Vec<usize>, usize> = HashMap::new();
+    let mut id: usize = 0;
+    for clade1 in &clades1 {
+        clade_id.insert(clade1.clone(), id);
+        id += 1
+    }
+
+    for clade2 in &clades2 {
+        match clade_id.get(clade2) {
+            Some(_) => {},
+            None => {
+                clade_id.insert(clade2.clone(), id);
+                id += 1;
+            }, 
+        }
+    }
+    //println!("clade_id {:?}", clade_id);
+
+    // weight1: (id1, id2) -> weight
+    let mut weight1: HashMap<(usize, usize), f64> = HashMap::new();
+    let mut weight2: HashMap<(usize, usize), f64> = HashMap::new();
+
+    let mut transfer_ids: HashSet<(usize,usize)> = HashSet::new();
+
+    for (u1,v1) in graph1.list_transfers() {
+        let clade_u1  = graph1.clade.get(&u1).unwrap();
+        let clade_v1  = graph1.clade.get(&v1).unwrap();
+
+        //println!("clade u1 {:?}", clade_u1);
+        //println!("clade v1 {:?}", clade_v1);
+        let id_u1 = clade_id.get(clade_u1).unwrap();
+        let id_v1 = clade_id.get(clade_v1).unwrap();
+
+        let w1 = graph1.weight.get(&(u1,v1)).unwrap();
+
+        weight1.insert((*id_u1,*id_v1), *w1);
+        transfer_ids.insert((*id_u1,*id_v1));
+    }
+
+    for (u2,v2) in graph2.list_transfers() {
+        let clade_u2  = graph2.clade.get(&u2).unwrap();
+        let clade_v2  = graph2.clade.get(&v2).unwrap();
+
+        let id_u2 = clade_id.get(clade_u2).unwrap();
+        let id_v2 = clade_id.get(clade_v2).unwrap();
+
+        let w2 = graph2.weight.get(&(u2,v2)).unwrap();
+
+        weight2.insert((*id_u2,*id_v2), *w2);
+        transfer_ids.insert((*id_u2,*id_v2));
+    }
+    
+    for (id1,id2) in transfer_ids {
+        let mut diff : f64 = 0f64;
+    
+        if let Some(w) =  weight1.get(&(id1,id2)) {
+            diff += w;
+        }
+        if let Some(w) =  weight2.get(&(id1,id2)) {
+            diff -= w;
+        }
+
+        distance += diff.abs();
+    }
+
+    return distance;
+
+
 }
 
 pub fn transfer_edition_distance_weighted_rust(network1 : Vec<String>, network2 : Vec<String>) -> f64 {
@@ -803,7 +917,6 @@ pub fn transfer_edition_distance_unordered_rust(network1 : Vec<String>, network2
     
     let mut distance : usize = 0;
 
-
     // Start of block ensuring same base tree
     let clades1 : Vec<Vec<usize>> = graph1.list_clades();
     for clade1 in &clades1 {
@@ -871,6 +984,12 @@ fn transfer_edition_distance_unordered(network1 : Vec<String>, network2 : Vec<St
     return Ok(distance);
 }
 
+#[pyfunction]
+fn transfer_edition_distance_unordered_weighted(network1 : Vec<String>, network2 : Vec<String>) -> PyResult<f64> {
+    let distance : f64 = transfer_edition_distance_unordered_weighted_rust(network1, network2);
+    return Ok(distance);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -921,6 +1040,7 @@ fn ted_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(transfer_edition_distance,m)?)?;
     m.add_function(wrap_pyfunction!(transfer_edition_distance_weighted,m)?)?;
     m.add_function(wrap_pyfunction!(transfer_edition_distance_unordered,m)?)?;
+    m.add_function(wrap_pyfunction!(transfer_edition_distance_unordered_weighted,m)?)?;
     Ok(())
 }
 

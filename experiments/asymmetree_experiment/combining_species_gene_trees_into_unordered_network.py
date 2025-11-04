@@ -1,8 +1,11 @@
+"""
+    This script creates the "ground truth" unordered weighted network.
+"""
 import sys
 import json
 
 species_tree = sys.argv[-2] # gr file
-gene_tree = sys.argv[-1]    # json fil
+gene_tree = sys.argv[-1]    # json file
 
 with open(gene_tree) as f:
     gene_tree_root = json.load(f)
@@ -26,8 +29,6 @@ while len(queue) > 0:
         queue.append(child1)
     except KeyError:
         pass
-
-#print("transfers", transfers, len(transfers))
 
 # reading species tree file
 adj = {}
@@ -85,6 +86,14 @@ for u,v in list_species_edges:
     
         N += 1
 
+# computing weight
+weight = {}
+for r1, r2 in transfers:
+    try:
+        weight[(r1,r2)] += 1
+    except KeyError:
+        weight[(r1,r2)] = 1
+
 nnodes = len(adj.keys())
 nedges = sum([len(ngbh) for _,ngbh in adj.items()])+len(transfers)
 print("nnodes","nedges",nnodes,nedges)
@@ -101,8 +110,8 @@ for r1,r2 in transfers:
     if r2[0]==r2[1]:
         attach_point_dict[r2] = r2[0]
 
-for r1,r2 in transfers:
+for (r1,r2), w in weight.items():
     u = attach_point_dict[r1]
     v = attach_point_dict[r2]
-    print(u,v,"transfer")
+    print(u,v,"transfer",w)
 
