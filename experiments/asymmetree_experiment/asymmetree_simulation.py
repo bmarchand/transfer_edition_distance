@@ -17,7 +17,7 @@ for cnt in range(nruns):
     
     
     tree_simulator = te.GeneTreeSimulator(S)
-    tree = tree_simulator.simulate(dupl_rate=1.0, loss_rate=0.5, hgt_rate=0.1)
+    tree = tree_simulator.simulate(dupl_rate=.5, loss_rate=0.5, hgt_rate=.1)
     tree = te.prune_losses(tree)
     
     tree.serialize("simulation_output/simulated_gene_trees/simulated_tree"+str(nleaves)+"leaves_"+str(cnt)+".json")
