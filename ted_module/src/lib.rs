@@ -374,6 +374,7 @@ fn parse_graph_weighted(list_edges : Vec<String>) -> Graph {
     };
 
     for line in list_edges {
+   //     println!("{:?}",line);
         let elements : Vec<&str> = line.split_whitespace().collect();
         let u : usize = elements[0].parse().unwrap();
         let v : usize = elements[1].parse().unwrap();
@@ -428,20 +429,22 @@ fn parse_graph_weighted(list_edges : Vec<String>) -> Graph {
 
         let out_neighbors = graph.out_ngbh.get(&node).unwrap().clone();
 
-        if out_neighbors.len() == 0 {
-            graph.clade.insert(node, vec![node]); 
-            return vec![node];
-        }
-
         let mut new_clade : Vec<usize> = Vec::new();
 
+        let mut cnt_tree_children : usize = 0;
         for child in out_neighbors {
             if *graph.edge_label.get(&(node,child)).unwrap()==EdgeType::TREE {
+                cnt_tree_children += 1;
                 let child_clade : Vec<usize> = fill_clade_map(child, graph);
                 for v in child_clade {
                     new_clade.push(v);
                 }
             }
+        }
+
+        if cnt_tree_children==0 {
+            graph.clade.insert(node, vec![node]); 
+            return vec![node];
         }
 
         new_clade.sort();

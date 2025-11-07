@@ -29,7 +29,7 @@ import tools as ts
 
 #All analysis folders contain the same input data. 
 #We'll grab Fitch just because it's the first
-input_path = "../data/fitch_labeling_analysis/input_data/"
+input_path = ""
 
 #Import Species Tree
 sname = input_path + "species_tree_ultra.pkl"
@@ -42,111 +42,124 @@ koname = input_path + "ARG_related_KOs.csv"
 KO_df = pd.read_csv(koname)
 KOs_list = list(KO_df['RF_KO'])
 matrix = [KOs_list[i:i+45] for i in range(0,len(KOs_list),45)]
+print(len(matrix))
+print(len(range(0,len(KOs_list),45)))
+
+dfs_fitch = []
+dfs_sankoff = []
+dfs_genesis = []
 
 #Testing with the first chunk of the matrix
-i = 0
-chunk = matrix[i]
-mname = "../data/KO_matrices/interphylum_matrix_chunk_" + str(i) + ".pkl" 
-file = open(mname,"rb")
-m = pkl.load(file)
-file.close()
+for k, i in enumerate(range(0,len(KOs_list),45)):
+    chunk = matrix[k]
+    mname = "interphylum_matrix_chunk_" + str(k) + ".pkl" 
+    file = open(mname,"rb")
+    m = pkl.load(file)
+    file.close()
+    
+    
+    # ### Fitch network
+    # In this network, no cost matrix is required. 
+    
+    # In[6]:
+    
+    
+    #Initialize Fitch network
+    fitch_Network = TB_Network(S.root)
+    fitch_Network.init_base_from_tralda(S,len(chunk))
+    
+    #Assigns characters to the leaves
+    for leaf in fitch_Network.leaves():
+        leaf.chars = m[leaf.label]
+    
+    #Computes the Fitch labeling
+    fitch_Network.fitch_labeling()
+    
+    #Gets list of first-appearances
+    Fitch_FAs = fitch_Network.get_fas_by_state_change()
+    
+    
+    # ### Important! cost matrix required for Sankoff and Genesis
+    
+    # In[ ]:
+    
+    
+    #Event transition cost for Sankoff and Genesis
+    loss_cost = 1.0
+    transfer_cost = 1.0
+    
+    
+    # ### Sankoff network
+    
+    # In[3]:
+    
+    
+    #Initialize Sankoff network
+    san_Network = TB_Network(S.root)
+    san_Network.init_base_from_tralda(S,len(chunk))
+    
+    for leaf in san_Network.leaves():
+        leaf.chars = m[leaf.label]
+    
+    san_Network.sankoff_labeling(loss_cost,transfer_cost)
+    
+    #Gets list of first-appearances
+    Sankoff_FAs = san_Network.get_fas_by_state_change()
+    
+    
+    # ### Genesis network
+    
+    # In[4]:
+    
+    
+    #Initialize Genesis network
+    gen_Network = TB_Network(S.root)
+    gen_Network.init_base_from_tralda(S,len(chunk))
+    
+    #Assign characters to leaves
+    for leaf in gen_Network.leaves():
+        leaf.chars = m[leaf.label]
+    
+    gen_Network.genesis_labeling(loss_cost,transfer_cost)
+    
+    
+    # ## How to get a greedy list of first appearances
+    # 
+    # It suffices to run the following function. This function sorts the first appearances acoording to a suitable timing, which is what a greedy algorithm that joins them would do :)
+    
+    # In[10]:
+    
+    
+    #How to get a sorted list of first appearances
+    def get_greedy_FA_list(Network,ko_list):
+        def _sort_fas(fa_list):
+                return(sorted(fa_list, key = lambda x:x.tstamp,reverse=True))
+        fa_set  = []
+        fa_dict = Network.get_fas_by_state_change()
+    
+        for char in fa_dict:
+            fas = list(fa_dict[char])
+            fa_dict[char] = _sort_fas(fas)
+            fa_set.append(fa_dict[char])
+        df = pd.DataFrame()
+        df['characters'] = ko_list
+        df['fa_list'] = fa_set
+        return(df)
+    
+    #IDs of the involved KOs (cause we separated them into chunks)
+    KOs = KOs_list[i:i+45]
+    
+    Fitch_data = get_greedy_FA_list(fitch_Network,KOs)
+    Sankoff_data = get_greedy_FA_list(san_Network,KOs)
+    Genesis_data = get_greedy_FA_list(gen_Network,KOs)
 
+    dfs_fitch.append(Fitch_data)
+    dfs_sankoff.append(Sankoff_data)
+    dfs_genesis.append(Genesis_data)
 
-# ### Fitch network
-# In this network, no cost matrix is required. 
-
-# In[6]:
-
-
-#Initialize Fitch network
-fitch_Network = TB_Network(S.root)
-fitch_Network.init_base_from_tralda(S,len(chunk))
-
-#Assigns characters to the leaves
-for leaf in fitch_Network.leaves():
-    leaf.chars = m[leaf.label]
-
-#Computes the Fitch labeling
-fitch_Network.fitch_labeling()
-
-#Gets list of first-appearances
-Fitch_FAs = fitch_Network.get_fas_by_state_change()
-
-
-# ### Important! cost matrix required for Sankoff and Genesis
-
-# In[ ]:
-
-
-#Event transition cost for Sankoff and Genesis
-loss_cost = 1.0
-transfer_cost = 1.0
-
-
-# ### Sankoff network
-
-# In[3]:
-
-
-#Initialize Sankoff network
-san_Network = TB_Network(S.root)
-san_Network.init_base_from_tralda(S,len(chunk))
-
-for leaf in san_Network.leaves():
-    leaf.chars = m[leaf.label]
-
-san_Network.sankoff_labeling(loss_cost,transfer_cost)
-
-#Gets list of first-appearances
-Sankoff_FAs = san_Network.get_fas_by_state_change()
-
-
-# ### Genesis network
-
-# In[4]:
-
-
-#Initialize Genesis network
-gen_Network = TB_Network(S.root)
-gen_Network.init_base_from_tralda(S,len(chunk))
-
-#Assign characters to leaves
-for leaf in gen_Network.leaves():
-    leaf.chars = m[leaf.label]
-
-gen_Network.genesis_labeling(loss_cost,transfer_cost)
-
-
-# ## How to get a greedy list of first appearances
-# 
-# It suffices to run the following function. This function sorts the first appearances acoording to a suitable timing, which is what a greedy algorithm that joins them would do :)
-
-# In[10]:
-
-
-#How to get a sorted list of first appearances
-def get_greedy_FA_list(Network,ko_list):
-    def _sort_fas(fa_list):
-            return(sorted(fa_list, key = lambda x:x.tstamp,reverse=True))
-    fa_set  = []
-    fa_dict = Network.get_fas_by_state_change()
-
-    for char in fa_dict:
-        fas = list(fa_dict[char])
-        fa_dict[char] = _sort_fas(fas)
-        fa_set.append(fa_dict[char])
-    df = pd.DataFrame()
-    df['characters'] = ko_list
-    df['fa_list'] = fa_set
-    return(df)
-
-#IDs of the involved KOs (cause we separated them into chunks)
-KOs = KOs_list[i:i+45]
-
-Fitch_data = get_greedy_FA_list(fitch_Network,KOs)
-Sankoff_data = get_greedy_FA_list(san_Network,KOs)
-Genesis_data = get_greedy_FA_list(gen_Network,KOs)
-
+Fitch_data = pd.concat(dfs_fitch)
+Sankoff_data = pd.concat(dfs_sankoff)
+Genesis_data = pd.concat(dfs_genesis)
 
 print("For Fitch:")
 print(Fitch_data.head())
@@ -159,5 +172,3 @@ Sankoff_data.to_csv("sankoff_network.csv")
 print("For Genesis:")
 print(Genesis_data.head())
 Genesis_data.to_csv("genesis_network.csv")
-
-

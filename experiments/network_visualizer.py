@@ -36,7 +36,7 @@ for u in tree_out_adj.keys():
     for v in tree_out_adj[u]:
         T.add_edge(u,v)
 
-pos = graphviz_layout(T, prog="dot")
+pos = graphviz_layout(T, prog="twopi")
 
 nx.draw_networkx_nodes(G,pos,node_size=3)
 nx.draw_networkx_labels(G,pos,font_size=8)
