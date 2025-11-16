@@ -1,5 +1,5 @@
 """
-    This script creates the "ground truth" unordered weighted network.
+    This script creates the "ground truth" unordered network.
 """
 import sys
 import json
@@ -62,6 +62,9 @@ def correct_reconc(reconc, parent_dict):
 
 transfers = [(correct_reconc(reconc1, parent), correct_reconc(reconc2, parent)) for reconc1, reconc2 in transfers]
 
+# treating parallel transfers as one transfer
+transfers = list(set(transfers))
+
 edges_with_transfer = set([])
 
 for r1,r2 in transfers:
@@ -86,13 +89,14 @@ for u,v in list_species_edges:
     
         N += 1
 
-# computing weight
-weight = {}
-for r1, r2 in transfers:
-    try:
-        weight[(r1,r2)] += 1
-    except KeyError:
-        weight[(r1,r2)] = 1
+# NO WEIGHT IF PARALLEL TRANSFERS ARE THE SAME
+## computing weight
+#weight = {}
+#for r1, r2 in transfers:
+#    try:
+#        weight[(r1,r2)] += 1
+#    except KeyError:
+#        weight[(r1,r2)] = 1
 
 nnodes = len(adj.keys())
 nedges = sum([len(ngbh) for _,ngbh in adj.items()])+len(transfers)
@@ -110,8 +114,8 @@ for r1,r2 in transfers:
     if r2[0]==r2[1]:
         attach_point_dict[r2] = r2[0]
 
-for (r1,r2), w in weight.items():
+for r1,r2 in transfers:
     u = attach_point_dict[r1]
     v = attach_point_dict[r2]
-    print(u,v,"transfer",w)
+    print(u,v,"transfer")
 

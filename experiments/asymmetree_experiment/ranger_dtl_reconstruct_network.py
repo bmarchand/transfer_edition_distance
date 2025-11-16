@@ -25,6 +25,9 @@ for line in open(ranger_dtl_out).readlines():
         dest = int(line.split(" ")[-1].rstrip('\n'))
         transfers.append((source,dest))
 
+# treating parallel transfers as one transfer
+transfers = list(set(transfers))
+
 #print(species_tree_adj, source,dest)
 
 subdivided = {} # associates to a node the subdivided vertex
@@ -59,12 +62,13 @@ for u,v in transfers:
 
     transfer_edges.append((w,x))
 
-weighted_transfers = {}
-for w,x in transfer_edges:
-    try:
-        weighted_transfers[(w,x)] += 1
-    except KeyError:
-        weighted_transfers[(w,x)] = 1
+# NO WEIGHT IF PARALLEL TRANSFERS ARE ONE TRANSFER
+#weighted_transfers = {}
+#for w,x in transfer_edges:
+#    try:
+#        weighted_transfers[(w,x)] += 1
+#    except KeyError:
+#        weighted_transfers[(w,x)] = 1
 
 
 nnodes = len(species_tree_adj.keys())
@@ -80,5 +84,5 @@ for key, value in species_tree_adj.items():
     for ngbh in value:
         print(key, ngbh, "tree")
 
-for (w,x),weight in weighted_transfers.items():
-    print(w,x,"transfer",weight)
+for w,x in transfer_edges:
+    print(w,x,"transfer")

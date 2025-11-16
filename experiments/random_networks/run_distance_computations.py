@@ -136,7 +136,7 @@ for fname1 in os.listdir(random_network_dir):
 #            if num_computations_per_alpha_and_n[alpha1][network_size[fname1]] > num_data_points:
 #                continue
 #
-            command = "timeout 30s ../../ted_module/target/release/ted_module".split(" ")
+            command = "../../ted_module/target/release/ted_module".split(" ")
             command.append(random_network_dir+fname1)
             command.append(random_network_dir+fname2)
 
