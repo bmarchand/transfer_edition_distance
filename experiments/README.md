@@ -2,5 +2,5 @@
 
 
 | experiment | description | folder |
--------------------------------------
+|------------|-------------|--------|
 | experiment 1 | benchmark on random LGT networks | random_LGT_networks|
