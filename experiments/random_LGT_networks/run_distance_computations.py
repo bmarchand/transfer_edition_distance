@@ -3,7 +3,6 @@ import numpy as np
 import subprocess
 import time
 import os
-#from ted_module import transfer_edition_distance
 import pandas as pd
 
 

@@ -1,0 +1,432 @@
+nnodes nedges 70 431
+4 67 tree
+4 47 tree
+4 33 tree
+4 11 tree
+11 69 tree
+11 10 tree
+10 43 tree
+10 28 tree
+4 23 tree
+23 55 tree
+23 9 tree
+9 12 tree
+12 49 tree
+12 48 tree
+9 8 tree
+8 30 tree
+8 26 tree
+8 53 tree
+23 17 tree
+17 41 tree
+17 58 tree
+4 3 tree
+3 31 tree
+3 59 tree
+3 16 tree
+16 45 tree
+16 18 tree
+18 50 tree
+18 65 tree
+18 60 tree
+18 15 tree
+15 66 tree
+15 68 tree
+3 2 tree
+2 19 tree
+19 36 tree
+19 44 tree
+2 24 tree
+24 42 tree
+24 56 tree
+4 1 tree
+1 13 tree
+13 32 tree
+13 51 tree
+1 0 tree
+0 7 tree
+7 40 tree
+7 38 tree
+7 46 tree
+7 35 tree
+0 21 tree
+21 54 tree
+21 20 tree
+20 52 tree
+20 29 tree
+20 27 tree
+0 39 tree
+0 22 tree
+22 14 tree
+14 62 tree
+14 63 tree
+22 61 tree
+4 5 tree
+5 34 tree
+5 37 tree
+5 6 tree
+6 64 tree
+6 25 tree
+6 57 tree
+23 45 transfer 1
+45 46 transfer 1
+46 57 transfer 1
+12 17 transfer 3
+17 21 transfer 6
+21 13 transfer 3
+13 15 transfer 2
+15 47 transfer 3
+47 55 transfer 5
+55 30 transfer 6
+30 26 transfer 2
+26 59 transfer 2
+59 60 transfer 1
+60 39 transfer 4
+39 62 transfer 6
+62 61 transfer 6
+8 17 transfer 5
+21 22 transfer 34
+22 10 transfer 3
+10 24 transfer 6
+24 67 transfer 13
+67 47 transfer 29
+55 48 transfer 2
+48 39 transfer 2
+6 13 transfer 2
+13 16 transfer 4
+16 7 transfer 8
+7 33 transfer 2
+33 55 transfer 7
+55 41 transfer 1
+41 31 transfer 7
+17 43 transfer 1
+43 55 transfer 1
+48 26 transfer 1
+59 52 transfer 1
+52 57 transfer 1
+11 23 transfer 22
+23 2 transfer 4
+2 67 transfer 7
+67 33 transfer 11
+23 21 transfer 24
+22 39 transfer 7
+5 21 transfer 5
+13 14 transfer 3
+14 16 transfer 4
+7 67 transfer 4
+33 69 transfer 4
+69 28 transfer 3
+28 48 transfer 1
+23 67 transfer 9
+67 69 transfer 1
+13 24 transfer 10
+24 15 transfer 2
+15 31 transfer 1
+31 59 transfer 19
+59 45 transfer 7
+45 50 transfer 3
+50 60 transfer 5
+60 34 transfer 1
+9 17 transfer 5
+21 39 transfer 2
+39 63 transfer 5
+63 61 transfer 4
+9 22 transfer 3
+22 2 transfer 3
+2 7 transfer 1
+7 55 transfer 2
+55 58 transfer 16
+58 59 transfer 4
+59 54 transfer 3
+54 52 transfer 9
+52 27 transfer 18
+27 39 transfer 13
+39 37 transfer 8
+23 13 transfer 3
+13 19 transfer 2
+19 67 transfer 3
+47 31 transfer 3
+5 3 transfer 4
+3 67 transfer 2
+47 33 transfer 30
+33 41 transfer 7
+0 5 transfer 3
+5 24 transfer 2
+24 16 transfer 7
+16 33 transfer 2
+33 59 transfer 3
+9 55 transfer 5
+23 5 transfer 4
+17 22 transfer 2
+22 55 transfer 2
+55 39 transfer 4
+23 0 transfer 6
+21 24 transfer 2
+24 39 transfer 6
+12 55 transfer 1
+30 54 transfer 1
+22 24 transfer 12
+17 20 transfer 1
+20 7 transfer 1
+55 26 transfer 4
+26 53 transfer 3
+6 3 transfer 1
+3 13 transfer 5
+13 7 transfer 6
+7 47 transfer 5
+55 52 transfer 1
+27 62 transfer 2
+62 34 transfer 1
+5 13 transfer 6
+16 47 transfer 3
+26 31 transfer 3
+31 39 transfer 3
+6 7 transfer 2
+7 18 transfer 3
+18 47 transfer 2
+41 59 transfer 3
+59 51 transfer 2
+51 62 transfer 1
+62 37 transfer 2
+23 19 transfer 1
+19 31 transfer 1
+31 45 transfer 2
+45 52 transfer 1
+23 47 transfer 3
+47 45 transfer 1
+45 27 transfer 1
+39 61 transfer 19
+18 33 transfer 3
+55 31 transfer 3
+59 39 transfer 4
+39 57 transfer 2
+31 34 transfer 1
+9 21 transfer 11
+58 39 transfer 7
+12 21 transfer 1
+67 58 transfer 1
+58 45 transfer 2
+45 38 transfer 1
+38 46 transfer 4
+46 39 transfer 2
+9 24 transfer 1
+24 20 transfer 2
+20 55 transfer 2
+58 61 transfer 1
+0 47 transfer 1
+47 59 transfer 5
+45 51 transfer 1
+22 67 transfer 5
+33 39 transfer 2
+21 67 transfer 2
+67 39 transfer 4
+23 6 transfer 3
+6 21 transfer 2
+22 13 transfer 5
+47 39 transfer 2
+23 43 transfer 1
+43 57 transfer 1
+17 45 transfer 1
+45 54 transfer 2
+23 24 transfer 9
+24 47 transfer 1
+47 69 transfer 1
+69 45 transfer 1
+0 37 transfer 1
+37 25 transfer 1
+11 1 transfer 4
+1 23 transfer 3
+33 31 transfer 8
+45 65 transfer 2
+65 37 transfer 1
+9 5 transfer 3
+5 17 transfer 3
+17 24 transfer 2
+16 67 transfer 6
+33 28 transfer 3
+28 31 transfer 1
+59 32 transfer 5
+32 40 transfer 1
+40 52 transfer 1
+11 9 transfer 4
+9 13 transfer 1
+7 31 transfer 1
+67 52 transfer 2
+9 69 transfer 1
+28 55 transfer 3
+22 16 transfer 1
+31 51 transfer 2
+51 29 transfer 1
+29 39 transfer 3
+24 55 transfer 3
+39 64 transfer 1
+64 25 transfer 4
+5 10 transfer 2
+10 3 transfer 1
+33 30 transfer 2
+30 41 transfer 1
+11 5 transfer 4
+5 7 transfer 1
+7 19 transfer 2
+19 15 transfer 1
+15 67 transfer 4
+33 45 transfer 1
+65 60 transfer 2
+60 51 transfer 2
+24 45 transfer 1
+45 60 transfer 1
+67 31 transfer 1
+1 9 transfer 1
+9 2 transfer 1
+33 48 transfer 1
+48 41 transfer 1
+22 47 transfer 2
+55 54 transfer 1
+21 55 transfer 1
+23 33 transfer 1
+33 27 transfer 2
+23 60 transfer 1
+60 29 transfer 1
+6 10 transfer 3
+10 13 transfer 3
+59 62 transfer 1
+17 49 transfer 2
+49 52 transfer 2
+27 61 transfer 3
+13 67 transfer 2
+24 52 transfer 1
+5 16 transfer 2
+32 38 transfer 1
+33 26 transfer 3
+12 6 transfer 3
+67 55 transfer 1
+30 53 transfer 2
+53 58 transfer 3
+58 44 transfer 2
+44 37 transfer 1
+21 14 transfer 1
+14 55 transfer 1
+59 50 transfer 1
+37 64 transfer 1
+23 22 transfer 4
+22 20 transfer 2
+20 67 transfer 1
+67 51 transfer 1
+51 39 transfer 1
+13 2 transfer 2
+47 58 transfer 2
+6 16 transfer 1
+55 53 transfer 1
+58 31 transfer 2
+32 34 transfer 1
+23 54 transfer 1
+33 54 transfer 1
+52 29 transfer 1
+67 59 transfer 2
+23 10 transfer 3
+51 54 transfer 1
+54 62 transfer 1
+45 39 transfer 2
+6 15 transfer 2
+59 65 transfer 1
+51 40 transfer 1
+40 38 transfer 2
+5 33 transfer 1
+21 58 transfer 1
+6 39 transfer 1
+61 34 transfer 1
+24 64 transfer 1
+21 10 transfer 3
+24 7 transfer 2
+7 39 transfer 4
+61 25 transfer 2
+10 7 transfer 1
+10 39 transfer 1
+33 49 transfer 1
+20 69 transfer 2
+69 55 transfer 4
+58 42 transfer 2
+10 16 transfer 1
+16 19 transfer 1
+51 34 transfer 1
+2 33 transfer 1
+31 44 transfer 2
+23 27 transfer 1
+9 10 transfer 1
+10 55 transfer 1
+17 67 transfer 1
+55 49 transfer 1
+58 52 transfer 1
+9 20 transfer 2
+20 58 transfer 1
+44 39 transfer 1
+1 6 transfer 1
+6 17 transfer 3
+17 3 transfer 2
+3 47 transfer 1
+28 37 transfer 1
+11 6 transfer 1
+32 54 transfer 1
+54 29 transfer 1
+29 63 transfer 1
+63 37 transfer 1
+19 69 transfer 2
+69 52 transfer 1
+59 29 transfer 1
+24 59 transfer 1
+59 66 transfer 1
+66 39 transfer 2
+17 10 transfer 1
+54 63 transfer 1
+42 39 transfer 1
+6 24 transfer 1
+24 18 transfer 1
+59 37 transfer 2
+17 13 transfer 2
+53 31 transfer 1
+20 47 transfer 1
+33 66 transfer 1
+24 14 transfer 2
+53 41 transfer 1
+59 38 transfer 1
+38 35 transfer 1
+24 54 transfer 1
+5 15 transfer 1
+60 32 transfer 2
+27 57 transfer 1
+22 19 transfer 1
+58 56 transfer 1
+56 38 transfer 1
+67 60 transfer 1
+23 7 transfer 1
+2 31 transfer 1
+31 52 transfer 1
+13 33 transfer 1
+33 40 transfer 1
+46 64 transfer 1
+26 58 transfer 1
+21 47 transfer 1
+23 39 transfer 1
+30 52 transfer 2
+59 64 transfer 1
+58 54 transfer 1
+54 39 transfer 1
+67 32 transfer 2
+32 39 transfer 2
+11 12 transfer 1
+17 55 transfer 1
+67 50 transfer 1
+32 63 transfer 1
+63 34 transfer 1
+69 26 transfer 1
+26 41 transfer 1
+41 52 transfer 1
+52 39 transfer 1
+39 34 transfer 1
+10 33 transfer 1
+33 52 transfer 1
+27 34 transfer 1
+34 37 transfer 1
+37 57 transfer 1
+47 41 transfer 1
+17 30 transfer 1
