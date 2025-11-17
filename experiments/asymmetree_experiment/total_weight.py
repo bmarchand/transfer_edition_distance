@@ -7,10 +7,10 @@ weight = 0
 
 for line in open(network1).readlines():
     if line.find("transfer") >= 0:
-        weight += float(line.split(" ")[-1].rstrip("\n"))
+        weight += 1 
 
 for line in open(network2).readlines():
     if line.find("transfer") >= 0:
-        weight += float(line.split(" ")[-1].rstrip("\n"))
+        weight += 1 
 
 print("total weight",weight)

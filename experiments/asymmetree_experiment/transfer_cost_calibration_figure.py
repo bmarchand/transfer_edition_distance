@@ -3,6 +3,12 @@
 
 # In[7]:
 
+import sys
+
+nleaves = sys.argv[-3]
+nsimulationruns = sys.argv[-2]
+nreconcruns = sys.argv[-1]
+
 
 dist_vecs = []
 hgt_cost = [10,20,30,40,50,60,70,80,90]
@@ -15,7 +21,7 @@ import numpy as np
 
 for T in hgt_cost:
     vec = []
-    for line in open("results_nleaves50_nruns100_nreconcruns1_T"+str(T)).readlines():
+    for line in open("results_nleaves"+nleaves+"_nruns"+nsimulationruns+"_nreconcruns"+nreconcruns+"_T"+str(T)).readlines():
         if line.find("total weight") >= 0:
             weight = float(line.split(" ")[-1].rstrip('\n'))
         if line.find("distance") >= 0:
