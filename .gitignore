@@ -26,6 +26,7 @@ target
 /target
 
 **/level_k_lgt_generator/random_lgt_networks/*.gr
+**/generated_networks/*.gr
 experiments/experiment_on_alitzel_data1/networks/*.gr
 
 *.pyc

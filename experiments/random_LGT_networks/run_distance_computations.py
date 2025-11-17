@@ -6,23 +6,11 @@ import os
 #from ted_module import transfer_edition_distance
 import pandas as pd
 
-reference_results = {} 
-
-try:
-    df = pd.read_csv("benchmark_results_reference.csv")
-    for line in df.itertuples():
-        reference_results[(line.fname1, line.fname2)] = line.runtime, line.distance
-except:
-    pass
-print(reference_results)
-
-max_N = 1000000             # no limit
-num_of_networks = 500
 
 network_size = {}
 nleaves = {}
 
-random_network_dir = "level_k_lgt_generator/random_lgt_networks/"
+random_network_dir = "generated_networks/"
 
 def list_leaves(fname):
     out_ngbh = {}
@@ -44,7 +32,7 @@ def list_leaves(fname):
     return sorted([int(u) for u, ngbh in out_ngbh.items() if len(ngbh)==0])
 
 import json
-with open("level_k_lgt_generator/level_dict.json") as f:
+with open("level_dict.json") as f:
     level_dict = json.load(f)
 
 
@@ -57,9 +45,9 @@ for fname in os.listdir(random_network_dir):
     nleaves[fname] = len(list_leaves(random_network_dir+fname))
 
 def extract_info(fname):
-    n = fname.split('_')[1][1:]
-    alpha = fname.split('_')[2][5:]
-    beta = fname.split('_')[3][4:]
+    n = fname.split('_')[-4][1:]
+    alpha = fname.split('_')[-3][5:]
+    beta = fname.split('_')[-2][4:]
     return n,alpha,beta
 
 names1 = []
@@ -103,6 +91,8 @@ for fname1 in os.listdir(random_network_dir):
         if fname2=="folder.keep":
             continue
 
+        if fname1.split('_')[1]!=fname2.split('_')[1]:
+            continue
 
         nleaves1 = nleaves[fname1] 
         nleaves2 = nleaves[fname2]
@@ -110,8 +100,8 @@ for fname1 in os.listdir(random_network_dir):
         nnodes1 = network_size[fname1]
         nnodes2 = network_size[fname2]
 
-        if nleaves1==nleaves2 and nnodes1 < max_N and nnodes2 < max_N:
-            print(fname1,fname2)
+        if nleaves1==nleaves2:
+            print("computing distance between",fname1,"and",fname2)
 
             L1 = open(random_network_dir+fname1).readlines()[1:]
             L2 = open(random_network_dir+fname2).readlines()[1:]
@@ -127,15 +117,7 @@ for fname1 in os.listdir(random_network_dir):
                 continue
             if nnodes1!=nnodes2:
                 continue
-#
-#            try:
-#                num_computations_per_alpha_and_n[alpha1][network_size[fname1]] += 1
-#            except KeyError:
-#                num_computations_per_alpha_and_n[alpha1][network_size[fname1]] = 1
-#
-#            if num_computations_per_alpha_and_n[alpha1][network_size[fname1]] > num_data_points:
-#                continue
-#
+
             command = "../../ted_module/target/release/ted_module".split(" ")
             command.append(random_network_dir+fname1)
             command.append(random_network_dir+fname2)
@@ -152,11 +134,6 @@ for fname1 in os.listdir(random_network_dir):
                 runtime.append(np.nan)
 
             distance.append(d)
-            try:
-                print(d,reference_results[(fname1,fname2)][1])
-                assert(d==reference_results[(fname1,fname2)][1])
-            except KeyError:
-                pass
 
             nnodes_network1.append(network_size[fname1])
             nnodes_network2.append(network_size[fname2])
@@ -174,8 +151,8 @@ for fname1 in os.listdir(random_network_dir):
             names2.append(fname2)
 
 
-            levels1.append(level_dict['random_lgt_networks/'+fname1])
-            levels2.append(level_dict['random_lgt_networks/'+fname2])
+            levels1.append(level_dict[random_network_dir+fname1])
+            levels2.append(level_dict[random_network_dir+fname2])
 
             nsteps1.append(n1)
             nsteps2.append(n2)

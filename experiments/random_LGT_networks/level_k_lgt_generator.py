@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# this script, except the if __name__=="__main__" part, is the
+# code of https://github.com/bielcardona/LGTGenerators/blob/master/evolution_model.ipynb,
+# converted to a script with jupyter nbconvert.
+
 # In[1]:
 
 
@@ -194,30 +198,32 @@ def local_level(G,bicc):
 # In[16]:
 
 if __name__=="__main__":
-    number_of_experiments = 100
-#    values_of_n = [5,10,15]+list(range(20,1000,100))
-    values_of_n = [100]
-    values_of_alpha = [0.3,0.4,0.5,0.6,0.7]
-    values_of_beta = [5**i*0.01 for i in range(4)]
-    values_of_alphabeta = [(0.1,1),(0.4,0.05),(0.7,0.01)]
-    stats_level = {}
-    stats_numblobs = {}
+
+    small = True
+    import json
+
+# FIXED NETWORK SIZE, SYSTEMATIC EXPLORATION OF ALPHA/BETA values (Figure 5 (b))
+
+    if small:
+        number_of_experiments = 5 # number of networks per alpha,beta and size.
+        values_of_n = [10]         # number of steps (network size is twice that)
+        values_of_alpha = [0.3,0.4,0.5,0.6,0.7] # values of alpha to try
+        values_of_beta = [5**i*0.01 for i in range(4)] # values of beta
+    else:
+        number_of_experiments = 100 # number of networks per alpha,beta and size.
+        values_of_n = [100]         # number of steps (network size is twice that)
+        values_of_alpha = [0.3,0.4,0.5,0.6,0.7] # values of alpha to try
+        values_of_beta = [5**i*0.01 for i in range(4)] # values of beta
     
-    level_dict = {}
+    level_dict = {} # storing level, in case.
     
     def file_name(n,alpha,beta,cnt):
-        return "random_lgt_networks/network_n"+str(n)+"_alpha"+str(alpha)+"_beta"+str(beta)+"_"+str(cnt)+'.gr'
+        return "generated_networks/fixed_n_fig_network_n"+str(n)+"_alpha"+str(alpha)+"_beta"+str(beta)+"_"+str(cnt)+'.gr'
     
-    seed_n = 2024
+    seed_n = 2025
     
-    for (n, alpha, beta) in itertools.product(values_of_n, values_of_alpha, values_of_beta):
-        if n>200 and alphabeta==(0.7,0.01):
-            print("continuing")
-            continue
-        #alpha,beta = alphabeta
-        print(n,alpha,beta)
-        levels = []
-        numblobs = []
+    for (n, alpha, beta) in itertools.product(values_of_n, values_of_alpha, values_of_beta): # all combinations
+        print("simulating networks for fixed n, several (alpha,beta)",n,alpha,beta)
         for cnt in range(number_of_experiments):
             resG = simulation(n, alpha, 1, beta, seed=seed_n)
             seed_n *= 2
@@ -227,10 +233,39 @@ if __name__=="__main__":
             level=max(rets_x_bicc)
             level_dict[file_name(n,alpha,beta,cnt)] = level
             export_network(resG,file_name(n,alpha,beta,cnt))
-            levels.append(level)
             sparse=[1 for x in rets_x_bicc if x!=0]
-            numblobs.append(sum(sparse))
+
+# TRYING OUT SOME COMBINATIONS OF ALPHA/BETA, AND PLOTTING AS A FUNCTION OF n (Figure 5 (a))
+    if small:
+        number_of_experiments = 10
+        values_of_n = [5,10]
+        values_of_alphabeta = [(0.1,1),(0.4,0.05),(0.7,0.01)]
+    else:
+        number_of_experiments = 100
+        values_of_n = [5,10,15]+list(range(20,1000,100))
+        values_of_alphabeta = [(0.1,1),(0.4,0.05),(0.7,0.01)]
     
-    import json
+    def file_name(n,alpha,beta,cnt):
+        return "generated_networks/fixed_alphabeta_network_n"+str(n)+"_alpha"+str(alpha)+"_beta"+str(beta)+"_"+str(cnt)+'.gr'
+    
+    seed_n = 2025
+    
+    for (n, alphabeta) in itertools.product(values_of_n, values_of_alphabeta):
+        if n>100 and alphabeta==(0.7,0.01):
+            print("continuing")
+            continue
+        alpha,beta = alphabeta
+        print(n,alpha,beta)
+        for cnt in range(number_of_experiments):
+            resG = simulation(n, alpha, 1, beta, seed=seed_n)
+            seed_n *= 2
+            seed_n += 1
+            bic_comp=list(nx.biconnected_components(nx.Graph(resG)))
+            rets_x_bicc=[local_level(resG,b) for b in bic_comp]
+            level=max(rets_x_bicc)
+            level_dict[file_name(n,alpha,beta,cnt)] = level
+            export_network(resG,file_name(n,alpha,beta,cnt))
+            sparse=[1 for x in rets_x_bicc if x!=0]
+    
     with open("level_dict.json","w") as f:
         json.dump(level_dict, f)

@@ -2,11 +2,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
 
-df = pd.read_csv("benchmark_results_rtime_against_n.csv")
+df = pd.read_csv("benchmark_results.csv")
 
 points_per_alphabeta = {}
 
 for index, row in df.iterrows():
+    if row.fname1.split('_')[1]!="alphabeta" or row.fname2.split('_')[1]!="alphabeta":
+        continue
     alpha = row.alphas1
     beta = row.betas1
     if (alpha,beta) not in points_per_alphabeta.keys():
