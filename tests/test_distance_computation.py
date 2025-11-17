@@ -149,8 +149,8 @@ def test_small_unordered_networks2():
 
 def test_small_unordered_networks3():
     
-    L1 = open("K00135_fitch.gr").readlines()[1:]
-    L2 = open("K00135_sankoff.gr").readlines()[1:]
+    L1 = open("tests/K00135_fitch.gr").readlines()[1:]
+    L2 = open("tests/K00135_sankoff.gr").readlines()[1:]
 
     relabel = {}
     cnt = 0

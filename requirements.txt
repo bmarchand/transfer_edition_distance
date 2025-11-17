@@ -1,0 +1,8 @@
+asymmetree
+matplotlib
+maturin
+networkx
+pandas
+pydot
+seaborn
+pytest
