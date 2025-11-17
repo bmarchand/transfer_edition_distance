@@ -43,7 +43,7 @@ Examples of how to call the method from python can be found in this [test file](
 ## Experiments
 
 Steps to reproduce the experiments of the paper can be found in the following respective folders:
-- **Scalability analysis on random LGT networks**: experiments/random_LGT_networks/
-- **Pairwise comparison of several character-based methods**: experiments/character_based_methods/
-- **Example of a calibration of the cost of transfers for reconciliation**: experiments/asymmetree_experiment/
+- **Scalability analysis on random LGT networks**: [experiments/random_LGT_networks/]
+- **Pairwise comparison of several character-based methods**: [experiments/character_based_methods/]
+- **Example of a calibration of the cost of transfers for reconciliation**: [experiments/asymmetree_experiment/]
 
