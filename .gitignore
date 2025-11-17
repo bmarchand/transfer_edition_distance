@@ -50,5 +50,6 @@ experiments/asymmetree_experiment/simulation_output/simulated_gene_trees/*.gr
 experiments/asymmetree_experiment/simulation_output/simulated_gene_trees/*.json
 experiments/asymmetree_experiment/networks/*
 experiments/asymmetree_experiment/results_nleaves*_nruns*_nreconcruns*_T*
+experiments/random_LGT_networks/level_dict.json
 
 **/.python-version
