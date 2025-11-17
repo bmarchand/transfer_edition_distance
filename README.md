@@ -15,7 +15,7 @@ source lgt_env/bin/activate
 The python dependencies (for running the experiments and installing the rust
 code as a python module) may be installed with:
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 The algorithms for computing the distance itself have been implemented in Rust.
