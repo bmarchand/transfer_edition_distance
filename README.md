@@ -47,3 +47,11 @@ Steps to reproduce the experiments of the paper can be found in the following re
     - **Pairwise comparison of several character-based methods**: experiments/character_based_methods/
     - **Example of a calibration of the cost of transfers for reconciliation**: experiments/asymmetree_experiment/
 
+
+### network visualizer
+This short script is to be used as follows:
+```
+python3 network_visualizer.py path/to/network.gr
+```
+
+where ``network.gr`` is essentially a list of edges of a network. An example is given here [experiments/network_example.gr](experiments/network_example.gr).
