@@ -8,12 +8,18 @@ import pandas as pd
 import matplotlib.pylab as plt
 import numpy as np
 import matplotlib.patches as patches
+import sys
+
+arg = sys.argv[-1]
+if arg=="small":
+    df = pd.read_csv("benchmark_results_small.csv")
+else:
+    df = pd.read_csv("benchmark_results_complete.csv")
 
 
 # In[2]:
 
 
-df = pd.read_csv("benchmark_results_fixed_n.csv")
 
 
 
@@ -27,6 +33,8 @@ data_per_alpha_beta = {}
 
 
 for index, row in df.iterrows():
+    if row.fname1.split("_")[1]!="n" or row.fname2.split("_")[1]!="n":
+        continue
     if row.betas1!=row.betas2:
         continue
     alpha = row.alphas1

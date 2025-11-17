@@ -10,6 +10,12 @@ import pandas as pd
 network_size = {}
 nleaves = {}
 
+import sys
+arg = sys.argv[-1]
+small = True
+if arg=="complete":
+    small = False
+
 random_network_dir = "generated_networks/"
 
 def list_leaves(fname):
@@ -186,4 +192,7 @@ d = {
 
 df = pd.DataFrame(data=d)
 print(df)
-df.to_csv("benchmark_results.csv")
+if small:
+    df.to_csv("benchmark_results_small.csv")
+else:
+    df.to_csv("benchmark_results_complete.csv")

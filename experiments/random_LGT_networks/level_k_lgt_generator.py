@@ -199,7 +199,12 @@ def local_level(G,bicc):
 
 if __name__=="__main__":
 
-    small = True
+    import sys
+    arg = sys.argv[-1]
+    if arg=="small":
+        small = True
+    else:
+        small=False
     import json
 
 # FIXED NETWORK SIZE, SYSTEMATIC EXPLORATION OF ALPHA/BETA values (Figure 5 (b))

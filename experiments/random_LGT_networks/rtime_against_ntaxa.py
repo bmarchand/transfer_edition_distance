@@ -1,8 +1,13 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
+import sys
 
-df = pd.read_csv("benchmark_results.csv")
+arg = sys.argv[-1]
+if arg=="small":
+    df = pd.read_csv("benchmark_results_small.csv")
+else:
+    df = pd.read_csv("benchmark_results_complete.csv")
 
 points_per_alphabeta = {}
 
