@@ -1,0 +1,10 @@
+nnodes nedges 10 9
+1 2 tree
+2 3 tree
+3 4 tree 
+1 5 tree
+5 6 tree
+5 7 tree
+6 8 tree
+3 9 tree
+2 6 transfer
