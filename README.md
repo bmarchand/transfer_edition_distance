@@ -34,8 +34,13 @@ maturin develop --release
 ```
 
 ### small example test
+For the **ordered** version of the distance
 ```
 ./target/release/ted_module tests/small_network1.gr tests/small_network2.gr
+```
+For the **unordered** version:
+```
+./target/release/ted_module --unordered /small_network1.gr tests/small_network2.gr
 ```
 
 Examples of how to call the method from python can be found in this [test file](tests/test_distance_computation.py).
