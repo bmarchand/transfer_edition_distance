@@ -1,8 +1,9 @@
-asymmetree
+asymmetree # for experiments
 matplotlib
-maturin
-networkx
-pandas
-pydot
+maturin    # for compiling rust into python module
+networkx   # for network visualizer
+pandas     # for experiments
+pydot      # for network visualizer
 seaborn
 pytest
+pyqt6      # for network visualizer
