@@ -1,3 +1,4 @@
 ranger_dtl_input/*.newick
 ranger_dtl_output/*.gr
 ranger_dtl_output/*.out
+finding_best_transfer_cost.pdf
