@@ -40,7 +40,7 @@ For the **ordered** version of the distance
 ```
 For the **unordered** version:
 ```
-./target/release/ted_module --unordered/small_network1.gr tests/small_network2.gr
+./target/release/ted_module --unordered /small_network1.gr tests/small_network2.gr
 ```
 
 Examples of how to call the method from python can be found in this [test file](tests/test_distance_computation.py).
