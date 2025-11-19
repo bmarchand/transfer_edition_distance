@@ -1,4 +1,4 @@
-from ted_module import transfer_edition_distance, transfer_edition_distance_unordered
+from dlgt_module import transfer_edition_distance, transfer_edition_distance_unordered
 
 def test_identical_small_networks():
     L = ["1 2 tree",

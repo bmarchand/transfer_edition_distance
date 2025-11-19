@@ -1,8 +1,10 @@
+//! Comments in main.rs
+//! 
 use std::fs::read_to_string;
-use ted_module::transfer_edition_distance_rust; 
-use ted_module::transfer_edition_distance_unordered_rust; 
-use ted_module::transfer_edition_distance_weighted_rust; 
-use ted_module::transfer_edition_distance_unordered_weighted_rust; 
+use dlgt_module::transfer_edition_distance_rust; 
+use dlgt_module::transfer_edition_distance_unordered_rust; 
+use dlgt_module::transfer_edition_distance_weighted_rust; 
+use dlgt_module::transfer_edition_distance_unordered_weighted_rust; 
 
 use clap::Parser;
 

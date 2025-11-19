@@ -3,7 +3,7 @@ requires = ["maturin>=1.9,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "ted_module"
+name = "dlgt_module"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",

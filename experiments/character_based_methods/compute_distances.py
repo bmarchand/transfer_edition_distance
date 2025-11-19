@@ -1,4 +1,4 @@
-from ted_module import transfer_edition_distance_unordered
+from dlgt_module import transfer_edition_distance_unordered
 import pandas as pd
 import os
 import time

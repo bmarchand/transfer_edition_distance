@@ -123,7 +123,7 @@ for fname1 in os.listdir(random_network_dir):
             if nnodes1!=nnodes2:
                 continue
 
-            command = "../../target/release/ted_module".split(" ")
+            command = "../../target/release/dlgt".split(" ")
             command.append(random_network_dir+fname1)
             command.append(random_network_dir+fname2)
 

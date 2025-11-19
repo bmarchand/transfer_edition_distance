@@ -1,3 +1,5 @@
+//! Comments in lib.rs  
+//!
 use pyo3::prelude::*;
 
 use std::collections::HashMap;
@@ -1039,7 +1041,7 @@ mod tests {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn ted_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn dlgt_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(transfer_edition_distance,m)?)?;
     m.add_function(wrap_pyfunction!(transfer_edition_distance_weighted,m)?)?;
     m.add_function(wrap_pyfunction!(transfer_edition_distance_unordered,m)?)?;
