@@ -1,5 +1,43 @@
-//! Comments in lib.rs  
+//! This crate contains the rust implementation  
+//! (along with PyO3 python bindings) of the
+//! algorithms presented in INSERTPREPRINTLINK
+//! for computing distances between LGT networks.
 //!
+//! The crate may be used in three ways:
+//! 
+//! # As a python library
+//! # As a command-line tool
+//! # As a rust crate
+//! ```
+//! let network1 = vec!["1 8 tree",
+//!                     "1 7 tree",
+//!                     "8 6 tree",
+//!                     "7 3 tree",
+//!                     "6 2 tree",
+//!                     "2 4 tree",
+//!                     "2 9 tree",
+//!                     "9 5 tree",
+//!                     "6 7 transfer",
+//!                     "8 9 transfer"];
+//!
+//! let network2 = vec!["1 6 tree",
+//!                     "1 7 tree",
+//!                     "6 8 tree",
+//!                     "7 3 tree",
+//!                     "8 2 tree",
+//!                     "2 4 tree",
+//!                     "2 9 tree",
+//!                     "9 5 tree",
+//!                     "6 7 transfer",
+//!                     "8 9 transfer"];
+//!
+//! let d_ordered = transfer_edition_distance_rust(network1.into_iter()
+//!                                                    .map(|x| x.to_string())
+//!                                                    .collect(), 
+//!                                                network2.into_iter()
+//!                                                    .map(|x| x.to_string())
+//!                                                    .collect());
+//! ```
 use pyo3::prelude::*;
 
 use std::collections::HashMap;
@@ -998,6 +1036,65 @@ fn transfer_edition_distance_unordered_weighted(network1 : Vec<String>, network2
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_ted() {
+        let network1 = vec!["1 8 tree",
+                            "1 7 tree",
+                            "8 6 tree",
+                            "7 3 tree",
+                            "6 2 tree",
+                            "2 4 tree",
+                            "2 9 tree",
+                            "9 5 tree",
+                            "6 7 transfer",
+                            "8 9 transfer"];
+ 
+        let network2 = vec!["1 6 tree",
+                            "1 7 tree",
+                            "6 8 tree",
+                            "7 3 tree",
+                            "8 2 tree",
+                            "2 4 tree",
+                            "2 9 tree",
+                            "9 5 tree",
+                            "6 7 transfer",
+                            "8 9 transfer"];
+
+        let d_ordered = transfer_edition_distance_rust(network1.into_iter().map(|x| x.to_string()).collect(), 
+                                                       network2.into_iter().map(|x| x.to_string()).collect());
+
+        assert_eq!(d_ordered,2);        
+    }
+
+    #[test]
+    fn test_ted_unordered() {
+        let network1 = vec!["1 8 tree",
+                            "1 7 tree",
+                            "8 6 tree",
+                            "7 3 tree",
+                            "6 2 tree",
+                            "2 4 tree",
+                            "2 9 tree",
+                            "9 5 tree",
+                            "6 7 transfer",
+                            "8 9 transfer"];
+ 
+        let network2 = vec!["1 6 tree",
+                            "1 7 tree",
+                            "6 8 tree",
+                            "7 3 tree",
+                            "8 2 tree",
+                            "2 4 tree",
+                            "2 9 tree",
+                            "9 5 tree",
+                            "6 7 transfer",
+                            "8 9 transfer"];
+
+        let d_unordered = transfer_edition_distance_unordered_rust(network1.clone().into_iter().map(|x| x.to_string()).collect(), 
+                                                         network2.clone().into_iter().map(|x| x.to_string()).collect());
+        assert_eq!(d_unordered,0);        
+    }
 
     #[test]
     fn test_to_string() {

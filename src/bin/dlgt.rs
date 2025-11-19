@@ -8,10 +8,14 @@ use dlgt_module::transfer_edition_distance_unordered_weighted_rust;
 
 use clap::Parser;
 
+/// A command-line tool for computing transfer edition distances between LGT networks.
 #[derive(Parser)]
 struct Cli {
+    /// filename for network1 (.gr format)
     fname1 : String,
+    /// filename for network2 (.gr format)
     fname2 : String,
+    /// Whether to use the unordered distance or not (default: ordered)
     #[arg(short, long)]
     unordered: bool,
     #[arg(short, long)]
