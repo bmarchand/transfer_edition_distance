@@ -850,11 +850,11 @@ pub fn transfer_edition_distance_weighted_rust(network1 : Vec<String>, network2 
 /// This computes ordered transfer distance, between two fully explicit
 /// LGT networks. (see  [transfer_edition_distance_unordered_rust] for the unordered version)
 ///
-/// the weighted (but ordered) version is a separate function because it prevents from using
-/// one of the optimizations used here, namely the iteration over the "deletion sets" ordered
-/// by size. Indeed, in the unweighted version, one can just iterate over the deletion
-/// sets ordered by size, and stop as soon as a valid deletion set (i.e. yielding two
-/// isomorphic networks) is found. 
+/// This implementation uses the pre-processing rule described in the article.
+/// It also uses another optimization: it iterates over the deletion
+/// sets ordered by size, and stops as soon as a valid deletion set (i.e. yielding two
+/// isomorphic networks) is found. This effectively makes it a parameterized algorithm
+/// parameterized by both the number of transfers and the distance value. 
 ///
 /// # Example: 
 /// ```
