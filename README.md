@@ -33,7 +33,7 @@ and installed as a python module called ``dlgt_module`` using:
 maturin develop --release
 ```
 
-### small example test
+## small example test
 For the **ordered** version of the distance
 ```
 ./target/release/dlgt tests/small_network1.gr tests/small_network2.gr
@@ -41,6 +41,29 @@ For the **ordered** version of the distance
 For the **unordered** version:
 ```
 ./target/release/dlgt --unordered /small_network1.gr tests/small_network2.gr
+```
+
+## Documentation
+
+The ``dlgt`` binary comes with a ``--help`` option:
+```
+A command-line tool for computing transfer edition distances between LGT networks
+
+Usage: dlgt [OPTIONS] <FNAME1> <FNAME2>
+
+Arguments:
+  <FNAME1>  filename for network1 (.gr format)
+  <FNAME2>  filename for network2 (.gr format)
+
+Options:
+  -u, --unordered  Whether to use the unordered distance or not (default: ordered)
+  -w, --weighted   
+  -h, --help       Print help
+
+```
+The rust code itself is also documented, you can open its documentation with:
+```
+cargo doc --open
 ```
 
 Examples of how to call the method from python can be found in this [test file](tests/test_distance_computation.py).
