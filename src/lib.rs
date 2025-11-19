@@ -6,7 +6,27 @@
 //! The crate may be used in three ways:
 //! 
 //! # As a python library
+//! Examples can be found in [this file](https://github.com/bmarchand/transfer_edition_distance/blob/main/tests/test_distance_computation.py)
 //! # As a command-line tool
+//! After compilation with ``cargo build --release``, a binary called ``dlgt`` can be found in ``target/release``. Running
+//! ``dlgt --help`` will print:
+
+//! After compilation with ``cargo build --release``, a binary called ``dlgt`` can be found in ``target/release``. Running
+//! ``dlgt --help`` will print:
+//! ```
+//! A command-line tool for computing transfer edition distances between LGT networks
+//! 
+//! Usage: dlgt [OPTIONS] <FNAME1> <FNAME2>
+//! 
+//! Arguments:
+//!   <FNAME1>  filename for network1 (.gr format)
+//!   <FNAME2>  filename for network2 (.gr format)
+//! 
+//! Options:
+//!   -u, --unordered  Whether to use the unordered distance or not (default: ordered)
+//!   -w, --weighted   
+//!   -h, --help       Print help
+//! ```
 //! # As a rust crate
 //! ```
 //! let network1 = vec!["1 8 tree",
