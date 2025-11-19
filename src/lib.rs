@@ -847,9 +847,8 @@ pub fn transfer_edition_distance_weighted_rust(network1 : Vec<String>, network2 
 
 /// Given two LGT networks given as lists of edges, computes the transfer edition distance
 ///
-/// This computes the unweighted transfer distance, between two fully explicit
-/// LGT networks (see other variants of this function, namely transfer_edition_distance_weighted
-/// and transfer_edition_distance_unordered, for these cases)
+/// This computes ordered transfer distance, between two fully explicit
+/// LGT networks. (see  [transfer_edition_distance_unordered_rust] for the unordered version)
 ///
 /// the weighted (but ordered) version is a separate function because it prevents from using
 /// one of the optimizations used here, namely the iteration over the "deletion sets" ordered
@@ -857,8 +856,37 @@ pub fn transfer_edition_distance_weighted_rust(network1 : Vec<String>, network2 
 /// sets ordered by size, and stop as soon as a valid deletion set (i.e. yielding two
 /// isomorphic networks) is found. 
 ///
-/// Example of input: vec!["1 2 tree","2 3 tree","1 4 tree","4 5 tree","2 4 transfer"], {another
-/// vec}
+/// # Example: 
+/// ```
+/// let network1 = vec!["1 8 tree",
+///                     "1 7 tree",
+///                     "8 6 tree",
+///                     "7 3 tree",
+///                     "6 2 tree",
+///                     "2 4 tree",
+///                     "2 9 tree",
+///                     "9 5 tree",
+///                     "6 7 transfer",
+///                     "8 9 transfer"];
+///
+/// let network2 = vec!["1 6 tree",
+///                     "1 7 tree",
+///                     "6 8 tree",
+///                     "7 3 tree",
+///                     "8 2 tree",
+///                     "2 4 tree",
+///                     "2 9 tree",
+///                     "9 5 tree",
+///                     "6 7 transfer",
+///                     "8 9 transfer"];
+///
+/// let d_ordered = transfer_edition_distance_rust(network1.into_iter()
+///                                                    .map(|x| x.to_string())
+///                                                    .collect(), 
+///                                                network2.into_iter()
+///                                                    .map(|x| x.to_string())
+///                                                    .collect());
+/// ```
 pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<String>) -> usize {
     let mut graph1 : Graph = parse_graph(network1);
     let mut graph2 : Graph = parse_graph(network2);
@@ -972,7 +1000,10 @@ pub fn transfer_edition_distance_rust(network1 : Vec<String>, network2 : Vec<Str
 
     return distance;
 }
-
+/// Rust implementation of the computation of the unordered version of the dLGT metric on
+/// LGT networks. The input arguments should follow the same format as for the
+/// [transfer_edition_distance_rust] function.
+///
 pub fn transfer_edition_distance_unordered_rust(network1 : Vec<String>, network2 : Vec<String>) -> usize {
 
     let mut graph1 : Graph = parse_graph(network1);
