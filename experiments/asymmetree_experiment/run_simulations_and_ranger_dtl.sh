@@ -15,7 +15,7 @@ for T in {10,20,30,40,50,60,70,80,90}; do
     for ((i=0; i<NRUNS;i++)); do 
         for ((j=0; j<NRECONCRUNS; j++)); do 
             ./Ranger-DTL.linux -D 10 -T ${T} -L 10 -i ranger_dtl_input/ranger_dtl_input_${NLEAVES}leaves_${i}.newick -o ranger_dtl_output/ranger_dtl_reconciliation_${NLEAVES}leaves_${i}_${T}.out${j}; done; done; done
-echo "reconstruct network predicted by rangerDTL"
+echo "reconstruct network predicted by rangerDTL (unordered)"
 for T in {10,20,30,40,50,60,70,80,90}; do 
     for ((i=0; i<NRUNS;i++)); do 
         for ((j=0; j<NRECONCRUNS; j++)); do 
