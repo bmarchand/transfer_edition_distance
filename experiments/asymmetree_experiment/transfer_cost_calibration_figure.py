@@ -45,7 +45,7 @@ for vec in dist_vecs:
 
 # In[13]:
 
-
+fig, ax = plt.subplots(figsize=(8,4))
 plt.errorbar(hgt_cost, means, yerr=stds, capsize=5,fmt='o-')
 plt.xlabel("cost of a transfer in reconciliation",fontsize=14)
 plt.ylabel("normalized transfer edit distance",fontsize=14)
