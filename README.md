@@ -1,6 +1,6 @@
 # Transfer edition distance for LGT networks
 
-This is the companion repository of INSERTPREPRINTLINK.
+This is the companion repository of [this article](https://www.biorxiv.org/content/10.1101/2025.11.20.689557v1).
 It contains the rust implementation of the **transfer edition distance
 for LGT networks** that the article presents.
 
