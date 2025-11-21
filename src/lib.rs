@@ -1,6 +1,6 @@
 //! This crate contains the rust implementation  
 //! (along with PyO3 python bindings) of the
-//! algorithms presented in INSERTPREPRINTLINK
+//! algorithms presented in [this article](https://www.biorxiv.org/content/10.1101/2025.11.20.689557v1)
 //! for computing distances between LGT networks.
 //!
 //! The crate may be used in three ways:
